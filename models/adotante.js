@@ -13,7 +13,7 @@ const Adotante = sequelize.define('Adotante', {
     endereco: { type: DataTypes.STRING },
     situacao: {
         type: DataTypes.ENUM('Ativo', 'Inativo'),
-        defaultValue: 'Ativo'
+        defaultValue: 'Inativo'
     }
 });
 

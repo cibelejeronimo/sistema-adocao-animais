@@ -18,12 +18,19 @@ router.post('/solicitar', async (req, res) => {
     }
 });
 
-// Rota para listar
+// Rota para listar apenas solicitações pendentes de aprovação
 router.get('/listar', async (req, res) => {
     try {
-        const adocoes = await Adocao.findAll();
+        const adocoes = await Adocao.findAll({
+            where: { status: 'em analise' },
+            include: [
+                { model: Adotante },
+                { model: Animal }
+            ]
+        });
         res.json(adocoes);
     } catch (error) {
+        console.error('Erro ao buscar adocoes pendentes:', error);
         res.status(500).json({ erro: 'Erro ao buscar' });
     }
 });

@@ -28,13 +28,22 @@
         </div>
         
         <div id="listaPedidos" class="max-w-4xl mx-auto space-y-4">
-            </div>
+        </div>
+
+        <div class="text-center mt-16 mb-8">
+            <h2 class="text-3xl font-bold text-gray-800">Adotantes Cadastrados</h2>
+            <p class="text-gray-600">Gerencie o status dos adotantes e ative quem estiver pronto.</p>
+            <div class="w-24 h-1 bg-green-500 mx-auto mt-4 rounded-full"></div>
+        </div>
+
+        <div id="listaAdotantes" class="max-w-4xl mx-auto space-y-4 mb-10">
+        </div>
     </div>
 
     <script>
         async function carregarPedidos() {
             try {
-                const response = await fetch('/adocoes/pendentes');
+                const response = await fetch('/adocoes/listar');
                 const pedidos = await response.json();
                 const container = document.getElementById('listaPedidos');
 
@@ -93,8 +102,70 @@
             }
         }
 
+        async function carregarAdotantes() {
+            try {
+                const response = await fetch('/adotantes/listar');
+                const adotantes = await response.json();
+                const container = document.getElementById('listaAdotantes');
+
+                if (adotantes.length === 0) {
+                    container.innerHTML = `
+                        <div class="text-center p-10 bg-white rounded-lg shadow">
+                            <p class="text-gray-500">Nenhum adotante cadastrado ainda.</p>
+                        </div>`;
+                    return;
+                }
+
+                container.innerHTML = adotantes.map(a => `
+                    <div class="bg-white p-6 rounded-lg shadow-md flex flex-col md:flex-row md:justify-between md:items-center border border-gray-200">
+                        <div>
+                            <p class="text-sm text-gray-500 uppercase font-bold text-xs">Adotante:</p>
+                            <p class="text-xl font-bold text-gray-800">${a.nome}</p>
+                            <p class="text-gray-600">📍 ${a.endereco || 'Não informado'}</p>
+                            <p class="text-gray-600">📞 ${a.telefone || 'Sem telefone'}</p>
+                        </div>
+                        <div class="mt-4 md:mt-0 flex flex-col gap-3 items-start md:items-end">
+                            <span class="inline-flex items-center gap-2 rounded-full px-3 py-1 text-sm font-semibold ${a.situacao === 'Ativo' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}">
+                                ${a.situacao}
+                            </span>
+                            <div class="flex gap-2">
+                                <button onclick="alterarStatusAdotante(${a.id_adotante}, 'Ativo')" class="px-4 py-2 rounded-lg font-bold text-white ${a.situacao === 'Ativo' ? 'bg-gray-400 cursor-not-allowed' : 'bg-green-600 hover:bg-green-700'}" ${a.situacao === 'Ativo' ? 'disabled' : ''}>
+                                    Ativar
+                                </button>
+                                <button onclick="alterarStatusAdotante(${a.id_adotante}, 'Inativo')" class="px-4 py-2 rounded-lg font-bold text-white ${a.situacao === 'Inativo' ? 'bg-gray-400 cursor-not-allowed' : 'bg-red-600 hover:bg-red-700'}" ${a.situacao === 'Inativo' ? 'disabled' : ''}>
+                                    Inativar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Erro ao carregar adotantes:', error);
+            }
+        }
+
+        async function alterarStatusAdotante(id, situacao) {
+            const confirmar = confirm(`Deseja alterar o status do adotante para ${situacao}?`);
+            if (!confirmar) return;
+
+            const response = await fetch(`/adotantes/status/${id}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ situacao })
+            });
+
+            if (response.ok) {
+                alert('✅ Status atualizado com sucesso!');
+                carregarAdotantes();
+            } else {
+                const erro = await response.json();
+                alert(`❌ ${erro.erro || 'Erro ao atualizar status.'}`);
+            }
+        }
+
         // Inicia a carga de dados ao abrir a página
         carregarPedidos();
+        carregarAdotantes();
     </script>
 </body>
 </html>

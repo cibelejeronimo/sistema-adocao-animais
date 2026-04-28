@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel ADM - Gestão de Adoções</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen">
+
+    <nav class="bg-green-700 p-4 shadow-md mb-6 text-white">
+        <div class="container mx-auto flex justify-between items-center">
+            <a href="index.html" class="text-xl font-bold flex items-center gap-2">🐾 Sistema Adoção</a>
+            <div class="space-x-6">
+                <a href="index.html" class="hover:text-green-200 transition">Home (Vitrine)</a>
+                <a href="cadastro.html" class="hover:text-green-200 transition">Cadastrar Adotante</a>
+                <a href="admin.html" class="hover:text-green-200 transition">Divulgar Animal</a>
+                <a href="painel-responsavel.html" class="font-bold border-l pl-4 border-green-500 text-green-200">Painel ADM</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mx-auto p-4">
+        <div class="text-center mb-8">
+            <h1 class="text-3xl font-bold text-gray-800">Solicitações de Adoção</h1>
+            <p class="text-gray-600">Analise os pedidos e decida o futuro dos pequenos</p>
+            <div class="w-24 h-1 bg-green-500 mx-auto mt-4 rounded-full"></div>
+        </div>
+        
+        <div id="listaPedidos" class="max-w-4xl mx-auto space-y-4">
+            </div>
+    </div>
+
+    <script>
+        async function carregarPedidos() {
+            try {
+                const response = await fetch('/adocoes/pendentes');
+                const pedidos = await response.json();
+                const container = document.getElementById('listaPedidos');
+
+                if (pedidos.length === 0) {
+                    container.innerHTML = `
+                        <div class="text-center p-10 bg-white rounded-lg shadow">
+                            <p class="text-gray-500">Não há solicitações pendentes no momento. ✨</p>
+                        </div>`;
+                    return;
+                }
+
+                container.innerHTML = pedidos.map(p => `
+                    <div class="bg-white p-6 rounded-lg shadow-md flex justify-between items-center border-l-8 border-green-600">
+                        <div>
+                            <p class="text-sm text-gray-500 uppercase font-bold text-xs">Candidato a Adotante:</p>
+                            <p class="text-xl font-bold text-gray-800">${p.Adotante.nome}</p>
+                            <p class="text-gray-600">📍 ${p.Adotante.endereco}</p>
+                            <div class="mt-3 inline-block bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-bold">
+                                🐶 Animal: ${p.Animal.nome}
+                            </div>
+                        </div>
+                        <div class="flex flex-col gap-2">
+                            <button onclick="decidir(${p.id_adocao}, 'finalizado')" 
+                                    class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg font-bold shadow transition">
+                                Aprovar
+                            </button>
+                            <button onclick="decidir(${p.id_adocao}, 'reprovado')" 
+                                    class="bg-red-50 hover:bg-red-100 text-red-700 px-6 py-2 rounded-lg font-bold border border-red-200 transition">
+                                Reprovar
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error("Erro ao carregar pedidos:", error);
+            }
+        }
+
+        async function decidir(id, status) {
+            const acao = status === 'finalizado' ? 'APROVAR' : 'REPROVAR';
+            const confirmar = confirm(`Deseja realmente ${acao} este pedido de adoção?`);
+            
+            if (confirmar) {
+                const response = await fetch(`/adocoes/decidir/${id}`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status })
+                });
+
+                if (response.ok) {
+                    alert('✅ Status atualizado com sucesso!');
+                    carregarPedidos(); 
+                } else {
+                    alert('❌ Erro ao atualizar status.');
+                }
+            }
+        }
+
+        // Inicia a carga de dados ao abrir a página
+        carregarPedidos();
+    </script>
+</body>
+</html>

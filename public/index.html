@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adoção de Animais - Home</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 min-h-screen">
+
+    <nav class="bg-green-700 p-4 shadow-md text-white">
+        <div class="container mx-auto flex justify-between items-center">
+            <a href="index.html" class="text-xl font-bold flex items-center gap-2">🐾 Sistema Adoção de Animais</a>
+            <div class="space-x-6">
+                <a href="index.html" class="font-bold border-b-2 border-white pb-1">Home</a>
+                <a href="cadastro.html" class="hover:text-green-200 transition">Cadastrar</a>
+                <a href="admin.html" class="hover:text-green-200 transition">Divulgar</a>
+                <a href="painel-responsavel.html" class="hover:text-green-200 border-l pl-4 border-green-500">Painel ADM</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="relative h-[450px] flex items-center justify-center bg-cover bg-center" 
+         style="background-image: url('fundo.jpg');"> 
+        
+        <div class="absolute inset-0 bg-black/50"></div>
+
+        <div class="relative z-10 w-full max-w-3xl text-center px-4 flex flex-col items-center">
+            <h1 class="text-4xl md:text-6xl font-extrabold text-white drop-shadow-2xl leading-tight">
+                Encontre seu novo melhor amigo
+            </h1>
+            
+            <p class="text-xl text-gray-100 mt-6 font-light drop-shadow-md">
+                Conectando animais resgatados a lares amorosos. Explore nossa lista e inicie um processo de adoção responsável.
+            </p>
+            
+            <div class="w-32 h-1.5 bg-green-500 mt-8 rounded-full shadow-lg"></div>
+        </div>
+    </div>
+
+    <div class="container mx-auto p-8">
+        <h2 class="text-3xl font-bold text-gray-800 mb-8 border-l-8 border-green-600 pl-4">Animais Disponíveis</h2>
+        
+        <div id="listaAnimais" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            </div>
+    </div>
+
+    <script>
+    async function carregarAnimais() {
+        try {
+            const response = await fetch('/animais/listar');
+            const animais = await response.json();
+            const container = document.getElementById('listaAnimais');
+
+            if (animais.length === 0) {
+                container.innerHTML = '<p class="text-gray-500 text-center col-span-full py-10 text-xl italic">Nenhum animal disponível no momento. Volte logo! 🐾</p>';
+                return;
+            }
+
+            container.innerHTML = animais.map(animal => `
+                <div class="bg-white rounded-2xl shadow-md overflow-hidden border border-gray-100 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2">
+                    <div class="relative h-56 overflow-hidden">
+                        <img src="${animal.foto || 'https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?q=80&w=500'}" 
+                             class="w-full h-full object-cover" 
+                             alt="Foto de ${animal.nome}">
+                        <div class="absolute top-4 right-4 bg-green-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg">
+                            DISPONÍVEL
+                        </div>
+                    </div>
+                    
+                    <div class="p-6">
+                        <h2 class="text-2xl font-bold text-gray-800 mb-1">${animal.nome}</h2>
+                        <p class="text-green-700 font-bold text-sm flex items-center gap-1 mb-3">
+                            📍 ${animal.idade}
+                        </p>
+                        <p class="text-gray-600 text-sm leading-relaxed mb-6 h-12 overflow-hidden">
+                            ${animal.descricao}
+                        </p>
+                        
+                        <button onclick="solicitarAdocao(${animal.id_animal})" 
+                                class="w-full bg-green-600 hover:bg-green-700 text-white font-extrabold py-3 rounded-xl transition-all shadow-md active:scale-95">
+                            Desejo Adotar
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        } catch (error) {
+            console.error("Erro ao carregar animais:", error);
+        }
+    }
+
+    async function solicitarAdocao(idAnimal) {
+        // ID 1 simulando o usuário que você cadastrou no 'cadastro.html'
+        const idAdotanteLogado = 1; 
+
+        if(!confirm("Deseja enviar uma solicitação de adoção?")) return;
+
+        const response = await fetch('/adocoes/solicitar', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id_adotante: idAdotanteLogado, id_animal: idAnimal })
+        });
+
+        const resultado = await response.json();
+        
+        if (response.ok) {
+            alert("✅ " + resultado.mensagem);
+            carregarAnimais(); // Atualiza a lista
+        } else {
+            alert("❌ Erro: " + resultado.erro);
+        }
+    }
+
+    // Inicialização
+    carregarAnimais();
+    </script>
+</body>
+</html>

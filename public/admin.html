@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administração - Divulgar Animal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen">
+
+    <nav class="bg-green-700 p-4 shadow-md mb-10 text-white">
+        <div class="container mx-auto flex justify-between items-center">
+            <a href="index.html" class="text-xl font-bold flex items-center gap-2">🐾 Sistema Adoção</a>
+            <div class="space-x-6">
+                <a href="index.html" class="hover:text-green-200 transition">Home (Vitrine)</a>
+                <a href="cadastro.html" class="hover:text-green-200 transition">Cadastrar Adotante</a>
+                <a href="admin.html" class="font-bold border-b-2 border-white pb-1">Divulgar Animal</a>
+                <a href="painel-responsavel.html" class="hover:text-green-200 border-l pl-4 border-green-500">Painel ADM</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="flex items-center justify-center px-4">
+        <div class="max-w-md w-full bg-white p-8 rounded-xl shadow-lg border-t-4 border-green-600">
+            <h2 class="text-2xl font-bold mb-6 text-gray-800">Divulgar Novo Animal</h2>
+            
+            <form id="formAnimal" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Nome do Animal:</label>
+                    <input type="text" id="nome" placeholder="Ex: Rex" class="border border-gray-300 p-2.5 w-full rounded-lg focus:ring-2 focus:ring-green-500 focus:outline-none" required>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Link da Foto (URL):</label>
+                    <input type="text" id="foto" placeholder="Cole o link da imagem aqui" class="border border-gray-300 p-2.5 w-full rounded-lg focus:ring-2 focus:ring-green-500 focus:outline-none">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Idade/Porte:</label>
+                    <input type="text" id="idade" placeholder="Ex: 2 anos / Médio" class="border border-gray-300 p-2.5 w-full rounded-lg focus:ring-2 focus:ring-green-500 focus:outline-none">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Descrição:</label>
+                    <textarea id="descricao" class="border border-gray-300 p-2.5 w-full rounded-lg focus:ring-2 focus:ring-green-500 focus:outline-none" rows="3"></textarea>
+                </div>
+                
+                <button type="submit" class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 w-full rounded-lg shadow-md transition-colors">
+                    Divulgar no Sistema
+                </button>
+            </form>
+            <p id="aviso" class="mt-4 text-center font-bold text-green-700"></p>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('formAnimal').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const dados = {
+                nome: document.getElementById('nome').value,
+                idade: document.getElementById('idade').value,
+                descricao: document.getElementById('descricao').value,
+                foto: document.getElementById('foto').value, // Pegando o link da foto
+                status: 'disponivel'
+            };
+
+            const response = await fetch('/animais/cadastrar', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(dados)
+            });
+
+            const res = await response.json();
+            document.getElementById('aviso').innerText = res.mensagem;
+            if(response.ok) document.getElementById('formAnimal').reset();
+        });
+    </script>
+</body>
+</html>

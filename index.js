@@ -6,6 +6,7 @@ const path = require('path');
 const Adotante = require('./models/adotante');
 const Animal = require('./models/animal');
 const Adocao = require('./models/adocao');
+const Admin = require('./models/admin');
 
 const app = express();
 
@@ -22,6 +23,9 @@ app.use('/animais', animalRoutes);
 
 const adocaoRoutes = require('./routes/adocaoRoutes.js');
 app.use('/adocoes', adocaoRoutes);
+
+const adminRoutes = require('./routes/adminRoutes.js');
+app.use('/admin', adminRoutes);
 
 // Função para iniciar o servidor
 async function startServer() {

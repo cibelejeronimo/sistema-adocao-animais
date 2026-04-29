@@ -14,6 +14,8 @@
             <div class="space-x-6">
                 <a href="index.html" class="hover:text-green-200 transition">Home (Vitrine)</a>
                 <a href="cadastro.html" class="hover:text-green-200 transition">Cadastrar Adotante</a>
+                <a href="admin-login.html" class="hover:text-green-200 transition">Login Admin</a>
+                <a href="admin-register.html" class="hover:text-green-200 transition">Cadastro Admin</a>
                 <a href="admin.html" class="font-bold border-b-2 border-white pb-1">Divulgar Animal</a>
                 <a href="painel-responsavel.html" class="hover:text-green-200 border-l pl-4 border-green-500">Painel ADM</a>
             </div>
@@ -54,25 +56,45 @@
     </div>
 
     <script>
+        function getAdminHeaders() {
+            const token = localStorage.getItem('adminToken');
+            return {
+                'Content-Type': 'application/json',
+                Authorization: token ? `Bearer ${token}` : ''
+            };
+        }
+
         document.getElementById('formAnimal').addEventListener('submit', async (e) => {
             e.preventDefault();
+
+            const token = localStorage.getItem('adminToken');
+            if (!token) {
+                alert('Você precisa fazer login como administrador antes de cadastrar animais.');
+                window.location.href = 'admin-login.html';
+                return;
+            }
+
             const dados = {
                 nome: document.getElementById('nome').value,
                 idade: document.getElementById('idade').value,
                 descricao: document.getElementById('descricao').value,
-                foto: document.getElementById('foto').value, // Pegando o link da foto
+                foto: document.getElementById('foto').value,
                 status: 'disponivel'
             };
 
             const response = await fetch('/animais/cadastrar', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: getAdminHeaders(),
                 body: JSON.stringify(dados)
             });
 
             const res = await response.json();
-            document.getElementById('aviso').innerText = res.mensagem;
-            if(response.ok) document.getElementById('formAnimal').reset();
+            const avisoEl = document.getElementById('aviso');
+            avisoEl.innerText = res.mensagem || res.erro;
+            avisoEl.classList.toggle('text-red-600', !response.ok);
+            avisoEl.classList.toggle('text-green-700', response.ok);
+
+            if (response.ok) document.getElementById('formAnimal').reset();
         });
     </script>
 </body>

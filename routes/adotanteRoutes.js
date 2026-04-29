@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const Adotante = require('../models/Adotante');
+const Adotante = require('../models/adotante');
+const adminAuth = require('../middleware/adminAuth');
 
 // Rota para cadastrar um novo adotante (Passo 1.2 do Diagrama de Sequência)
 router.post('/cadastrar', async (req, res) => {
@@ -26,7 +27,7 @@ router.post('/cadastrar', async (req, res) => {
 });
 
 // Rota para ativar/adicionar situacao Ativo ao adotante
-router.get('/listar', async (req, res) => {
+router.get('/listar', adminAuth, async (req, res) => {
     try {
         const adotantes = await Adotante.findAll();
         res.json(adotantes);
@@ -36,7 +37,7 @@ router.get('/listar', async (req, res) => {
     }
 });
 
-router.patch('/status/:id', async (req, res) => {
+router.patch('/status/:id', adminAuth, async (req, res) => {
     try {
         const { id } = req.params;
         const { situacao } = req.body;
@@ -61,7 +62,7 @@ router.patch('/status/:id', async (req, res) => {
     }
 });
 
-router.patch('/ativar/:id', async (req, res) => {
+router.patch('/ativar/:id', adminAuth, async (req, res) => {
     try {
         const { id } = req.params;
         const adotante = await Adotante.findByPk(id);

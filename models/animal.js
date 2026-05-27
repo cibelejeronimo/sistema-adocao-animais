@@ -9,6 +9,9 @@ const Animal = sequelize.define('Animal', {
     },
     nome: { type: DataTypes.STRING, allowNull: false },
     idade: { type: DataTypes.STRING },
+    porte: { type: DataTypes.STRING, allowNull: true },
+    vacinas: { type: DataTypes.STRING, allowNull: true },
+    temperamento: { type: DataTypes.STRING, allowNull: true },
     descricao: { type: DataTypes.TEXT },
     foto: { type: DataTypes.STRING, allowNull: true },
     status: { type: DataTypes.STRING, defaultValue: 'disponivel' }

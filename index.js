@@ -7,6 +7,11 @@ const Adotante = require('./models/adotante');
 const Animal = require('./models/animal');
 const Adocao = require('./models/adocao');
 const Admin = require('./models/admin');
+const Imagem = require('./models/imagem');
+
+// Associações
+Animal.hasMany(Imagem, { foreignKey: 'id_animal' });
+Imagem.belongsTo(Animal, { foreignKey: 'id_animal' });
 
 const app = express();
 
@@ -30,8 +35,9 @@ app.use('/admin', adminRoutes);
 // Função para iniciar o servidor
 async function startServer() {
     try {
-        // Sincroniza o banco de dados
-        await sequelize.sync(); 
+        // Sincroniza o banco de dados sem usar alteração automática de esquema.
+        // Isso evita a criação de tabelas temporárias/backup como Animals_backup no SQLite.
+        await sequelize.sync();
         
         console.log('---');
         console.log('✅ Banco de dados conectado com sucesso!');

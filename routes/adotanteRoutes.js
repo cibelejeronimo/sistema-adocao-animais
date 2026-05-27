@@ -81,4 +81,20 @@ router.patch('/ativar/:id', adminAuth, async (req, res) => {
     }
 });
 
+router.get('/perfil/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const adotante = await Adotante.findByPk(id);
+
+        if (!adotante) {
+            return res.status(404).json({ erro: 'Adotante não encontrado' });
+        }
+
+        res.json({ dados: adotante });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ erro: 'Erro ao buscar perfil do adotante' });
+    }
+});
+
 module.exports = router;

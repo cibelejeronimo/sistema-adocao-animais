@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Administração - Divulgar Animal</title>
+    <title>Administração - Cadastrar Animal</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-100 min-h-screen">
@@ -12,43 +12,98 @@
         <div class="container mx-auto flex justify-between items-center">
             <a href="index.html" class="text-xl font-bold flex items-center gap-2">🐾 Sistema Adoção</a>
             <div class="space-x-6">
-                <a href="index.html" class="hover:text-green-200 transition">Home (Vitrine)</a>
+                <a href="index.html" class="hover:text-green-200 transition">Vitrine</a>
                 <a href="cadastro.html" class="hover:text-green-200 transition">Cadastrar Adotante</a>
                 <a href="admin-login.html" class="hover:text-green-200 transition">Login Admin</a>
                 <a href="admin-register.html" class="hover:text-green-200 transition">Cadastro Admin</a>
-                <a href="admin.html" class="font-bold border-b-2 border-white pb-1">Divulgar Animal</a>
-                <a href="painel-responsavel.html" class="hover:text-green-200 border-l pl-4 border-green-500">Painel ADM</a>
+                    <a href="admin.html" class="font-bold border-b-2 border-white pb-1 show-for-admin">Cadastrar Animal</a>
+                    <div class="relative inline-block group">
+                        <a href="painel-responsavel.html" class="hover:text-green-200 border-l pl-4 border-green-500">Painel ADM ▾</a>
+                        <div class="absolute right-0 mt-2 hidden group-hover:block bg-white text-gray-800 rounded shadow-lg min-w-[200px]">
+                            <a href="painel-responsavel.html" class="block px-4 py-2 hover:bg-gray-100">Entrar Painel</a>
+                            <a href="admin-register.html" class="block px-4 py-2 hover:bg-gray-100 show-for-admin">Cadastrar Administrador</a>
+                        </div>
+                    </div>
             </div>
         </div>
     </nav>
 
+        <script>
+            (function(){
+                const isAdmin = !!localStorage.getItem('adminToken');
+                document.querySelectorAll('.show-for-admin').forEach(el => el.style.display = isAdmin ? '' : 'none');
+                const path = window.location.pathname.split('/').pop();
+                if ((path === 'admin.html' || path === 'painel-responsavel.html') && !isAdmin) {
+                    alert('Acesso restrito: apenas administradores podem acessar esta página.');
+                    window.location.href = 'admin-login.html';
+                }
+            })();
+        </script>
+
     <div class="flex items-center justify-center px-4">
         <div class="max-w-md w-full bg-white p-8 rounded-xl shadow-lg border-t-4 border-green-600">
-            <h2 class="text-2xl font-bold mb-6 text-gray-800">Divulgar Novo Animal</h2>
+            <h2 class="text-2xl font-bold mb-6 text-gray-800">Cadastrar Novo Animal</h2>
             
-            <form id="formAnimal" class="space-y-4">
+            <form id="formAnimal" class="space-y-4" enctype="multipart/form-data">
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Nome do Animal:</label>
                     <input type="text" id="nome" placeholder="Ex: Rex" class="border border-gray-300 p-2.5 w-full rounded-lg focus:ring-2 focus:ring-green-500 focus:outline-none" required>
                 </div>
                 
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Link da Foto (URL):</label>
-                    <input type="text" id="foto" placeholder="Cole o link da imagem aqui" class="border border-gray-300 p-2.5 w-full rounded-lg focus:ring-2 focus:ring-green-500 focus:outline-none">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Imagens do Animal (a primeira será capa):</label>
+                    <input type="file" id="imagens" name="imagens" multiple accept="image/*" class="border border-gray-300 p-2.5 w-full rounded-lg focus:ring-2 focus:ring-green-500 focus:outline-none">
+                    <p id="imagensAviso" class="mt-2 text-sm text-red-600"></p>
                 </div>
 
+                <div id="imagemPreview" class="grid grid-cols-2 gap-3"></div>
+
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Idade/Porte:</label>
-                    <input type="text" id="idade" placeholder="Ex: 2 anos / Médio" class="border border-gray-300 p-2.5 w-full rounded-lg focus:ring-2 focus:ring-green-500 focus:outline-none">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Idade aproximada:</label>
+                    <input type="text" id="idade" placeholder="Ex: 2 anos " class="border border-gray-300 p-2.5 w-full rounded-lg focus:ring-2 focus:ring-green-500 focus:outline-none">
+                </div>
+
+                
+                
+                 <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Vacinas:</label>
+                    <input type="text" id="vacinas" placeholder="Ex: V8 ou V10, Raiva" class="border border-gray-300 p-2.5 w-full rounded-lg focus:ring-2 focus:ring-green-500 focus:outline-none">
                 </div>
                 
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Descrição:</label>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Porte do Animal:</label>
+                    <select id="porte" class="border border-gray-300 bg-white p-3 w-full rounded-lg focus:ring-2 focus:ring-green-500 focus:outline-none">
+                        <option value="Pequeno">Porte Pequeno</option>
+                        <option value="Médio" selected>Porte Médio</option>
+                        <option value="Grande">Porte Grande</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Temperamento:</label>
+                    <select id="temperamento" class="border border-gray-300 bg-white p-3 w-full rounded-lg focus:ring-2 focus:ring-green-500 focus:outline-none">
+                        <option value="Calmo">Calmo</option>
+                        <option value="Amigavel">Amigável</option>
+                        <option value="Bravo" selected>Bravo</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Castrado?</label>
+                    <select id="pet-castrado" class="border border-gray-300 bg-white p-3 w-full rounded-lg focus:ring-2 focus:ring-green-500 focus:outline-none">
+                        <option value="Sim">Sim</option>
+                        <option value="Não">Não</option>
+                    </select>
+                </div>
+               
+    
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Texto Motivacional para Adoção:</label>
                     <textarea id="descricao" class="border border-gray-300 p-2.5 w-full rounded-lg focus:ring-2 focus:ring-green-500 focus:outline-none" rows="3"></textarea>
                 </div>
                 
                 <button type="submit" class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 w-full rounded-lg shadow-md transition-colors">
-                    Divulgar no Sistema
+                    Cadastrar no Sistema
                 </button>
             </form>
             <p id="aviso" class="mt-4 text-center font-bold text-green-700"></p>
@@ -59,42 +114,146 @@
         function getAdminHeaders() {
             const token = localStorage.getItem('adminToken');
             return {
-                'Content-Type': 'application/json',
                 Authorization: token ? `Bearer ${token}` : ''
             };
         }
 
+        async function validarTokenAdmin() {
+            const token = localStorage.getItem('adminToken');
+            if (!token) return false;
+
+            try {
+                const res = await fetch('/admin/me', {
+                    headers: getAdminHeaders()
+                });
+                if (res.ok) {
+                    return true;
+                }
+            } catch (error) {
+                console.error('Erro ao validar token admin:', error);
+            }
+            localStorage.removeItem('adminToken');
+            return false;
+        }
+
+        const imagensInput = document.getElementById('imagens');
+        const imagensAviso = document.getElementById('imagensAviso');
+        const imagemPreview = document.getElementById('imagemPreview');
+        const selectedFiles = [];
+        const MAX_IMAGES = 4;
+
+        function renderImagePreview() {
+            imagemPreview.innerHTML = '';
+            imagensAviso.innerText = '';
+
+            selectedFiles.forEach((file, index) => {
+                const reader = new FileReader();
+                const previewCard = document.createElement('div');
+                previewCard.className = 'relative rounded-xl overflow-hidden border border-gray-200';
+
+                const removeButton = document.createElement('button');
+                removeButton.type = 'button';
+                removeButton.className = 'absolute top-1 right-1 bg-white bg-opacity-90 rounded-full p-1 text-red-600 hover:text-red-800 shadow';
+                removeButton.innerText = '×';
+                removeButton.addEventListener('click', () => {
+                    selectedFiles.splice(index, 1);
+                    renderImagePreview();
+                });
+
+                const img = document.createElement('img');
+                img.className = 'w-full h-32 object-cover';
+                img.alt = `Imagem ${index + 1}`;
+
+                reader.onload = (event) => {
+                    img.src = event.target.result;
+                };
+                reader.readAsDataURL(file);
+
+                const caption = document.createElement('div');
+                caption.className = 'px-2 py-1 text-xs text-gray-600 bg-white';
+                caption.innerText = index === 0 ? 'Capa' : `Imagem ${index + 1}`;
+
+                previewCard.appendChild(removeButton);
+                previewCard.appendChild(img);
+                previewCard.appendChild(caption);
+                imagemPreview.appendChild(previewCard);
+            });
+
+            if (selectedFiles.length === 0) {
+                imagemPreview.innerHTML = '<p class="text-sm text-gray-500">Nenhuma imagem selecionada ainda. Escolha até 4 imagens.</p>';
+            }
+        }
+
+        imagensInput.addEventListener('change', (e) => {
+            const novosArquivos = Array.from(e.target.files);
+            e.target.value = '';
+
+            if (selectedFiles.length + novosArquivos.length > MAX_IMAGES) {
+                imagensAviso.innerText = `Você pode enviar no máximo ${MAX_IMAGES} imagens.`;
+            }
+
+            const permitidos = novosArquivos.slice(0, MAX_IMAGES - selectedFiles.length);
+            selectedFiles.push(...permitidos);
+            renderImagePreview();
+        });
+
+        renderImagePreview();
+
         document.getElementById('formAnimal').addEventListener('submit', async (e) => {
             e.preventDefault();
 
-            const token = localStorage.getItem('adminToken');
-            if (!token) {
-                alert('Você precisa fazer login como administrador antes de cadastrar animais.');
+            const tokenValido = await validarTokenAdmin();
+            if (!tokenValido) {
+                alert('Token inválido ou expirado. Faça login novamente.');
                 window.location.href = 'admin-login.html';
                 return;
             }
 
-            const dados = {
-                nome: document.getElementById('nome').value,
-                idade: document.getElementById('idade').value,
-                descricao: document.getElementById('descricao').value,
-                foto: document.getElementById('foto').value,
-                status: 'disponivel'
-            };
+            if (selectedFiles.length > MAX_IMAGES) {
+                imagensAviso.innerText = `Você pode enviar no máximo ${MAX_IMAGES} imagens.`;
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('nome', document.getElementById('nome').value);
+            formData.append('idade', document.getElementById('idade').value);
+            formData.append('porte', document.getElementById('porte').value);
+            formData.append('vacinas', document.getElementById('vacinas').value);
+            formData.append('temperamento', document.getElementById('temperamento').value);
+            formData.append('descricao', document.getElementById('descricao').value);
+            formData.append('status', 'disponivel');
+
+            selectedFiles.forEach(file => {
+                formData.append('imagens', file);
+            });
 
             const response = await fetch('/animais/cadastrar', {
                 method: 'POST',
                 headers: getAdminHeaders(),
-                body: JSON.stringify(dados)
+                body: formData
             });
 
             const res = await response.json();
             const avisoEl = document.getElementById('aviso');
+
+            if (response.status === 401) {
+                localStorage.removeItem('adminToken');
+                avisoEl.innerText = 'Token inválido ou expirado. Faça login novamente.';
+                avisoEl.classList.add('text-red-600');
+                avisoEl.classList.remove('text-green-700');
+                setTimeout(() => window.location.href = 'admin-login.html', 1800);
+                return;
+            }
+
             avisoEl.innerText = res.mensagem || res.erro;
             avisoEl.classList.toggle('text-red-600', !response.ok);
             avisoEl.classList.toggle('text-green-700', response.ok);
 
-            if (response.ok) document.getElementById('formAnimal').reset();
+            if (response.ok) {
+                document.getElementById('formAnimal').reset();
+                selectedFiles.length = 0;
+                renderImagePreview();
+            }
         });
     </script>
 </body>

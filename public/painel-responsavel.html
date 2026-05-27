@@ -1,314 +1,631 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Painel ADM - Gestão de Adoções</title>
+
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
+
 <body class="bg-gray-100 min-h-screen">
 
+    <!-- NAVBAR -->
     <nav class="bg-green-700 p-4 shadow-md mb-6 text-white">
         <div class="container mx-auto flex justify-between items-center">
-            <a href="index.html" class="text-xl font-bold flex items-center gap-2">🐾 Sistema Adoção</a>
+
+            <a href="index.html" class="text-xl font-bold flex items-center gap-2">
+                🐾 Sistema Adoção
+            </a>
+
             <div class="space-x-6">
-                <a href="index.html" class="hover:text-green-200 transition">Home (Vitrine)</a>
-                <a href="cadastro.html" class="hover:text-green-200 transition">Cadastrar Adotante</a>
-                <a href="admin.html" class="hover:text-green-200 transition">Divulgar Animal</a>
-                <a href="painel-responsavel.html" class="font-bold border-l pl-4 border-green-500 text-green-200">Painel ADM</a>
+                <a href="index.html" class="hover:text-green-200 transition">
+                    Home
+                </a>
+
+                <a href="cadastro.html" class="hover:text-green-200 transition">
+                    Cadastro
+                </a>
+
+                <a href="admin.html" class="hover:text-green-200 transition show-for-admin">
+                    Cadastrar Animal
+                </a>
+
+                <a href="painel-responsavel.html"
+                   class="font-bold border-l pl-4 border-green-500 text-green-200">
+                    Painel ADM
+                </a>
             </div>
         </div>
     </nav>
 
+    <!-- CONTEÚDO -->
     <div class="container mx-auto p-4">
-        <div class="text-center mb-8">
-            <h1 class="text-3xl font-bold text-gray-800">Solicitações de Adoção</h1>
-            <p class="text-gray-600">Analise os pedidos e decida o futuro dos pequenos</p>
-            <div class="w-24 h-1 bg-green-500 mx-auto mt-4 rounded-full"></div>
-        </div>
-        
-        <div id="listaPedidos" class="max-w-4xl mx-auto space-y-4">
+
+        <div class="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between mb-8">
+
+            <div>
+                <h1 class="text-3xl font-bold text-gray-800">
+                    Painel ADM
+                </h1>
+
+                <p class="text-gray-600">
+                    Gerencie solicitações, animais e adotantes.
+                </p>
+            </div>
+
+            <div class="flex gap-2 flex-wrap">
+
+                <button
+                    onclick="mostrarAba('solicitacoes')"
+                    class="rounded-full border border-green-600 bg-green-600 px-5 py-3 text-sm font-bold text-white"
+                >
+                    Solicitações
+                </button>
+
+                <button
+                    onclick="mostrarAba('animais')"
+                    class="rounded-full border border-green-600 bg-white px-5 py-3 text-sm font-bold text-green-700"
+                >
+                    Animais
+                </button>
+
+                <button
+                    onclick="mostrarAba('adotantes')"
+                    class="rounded-full border border-green-600 bg-white px-5 py-3 text-sm font-bold text-green-700"
+                >
+                    Adotantes
+                </button>
+
+            </div>
         </div>
 
-        <div class="text-center mt-16 mb-8">
-            <h2 class="text-3xl font-bold text-gray-800">Animais para Moderação</h2>
-            <p class="text-gray-600">Veja todos os animais cadastrados e altere o status para controle de divulgação.</p>
-            <div class="w-24 h-1 bg-green-500 mx-auto mt-4 rounded-full"></div>
+        <!-- ABA SOLICITAÇÕES -->
+        <div id="abaSolicitacoes">
+
+            <div class="text-center mb-8">
+
+                <h2 class="text-3xl font-bold text-gray-800">
+                    Solicitações de Adoção
+                </h2>
+
+                <p class="text-gray-600">
+                    Analise os pedidos de adoção.
+                </p>
+
+            </div>
+
+            <div id="listaPedidos" class="space-y-4"></div>
         </div>
 
-        <div id="listaAnimais" class="max-w-4xl mx-auto space-y-4 mb-10">
+        <!-- ABA ANIMAIS -->
+        <div id="abaAnimais" class="hidden">
+
+            <div class="text-center mb-8">
+
+                <h2 class="text-3xl font-bold text-gray-800">
+                    Animais Cadastrados
+                </h2>
+
+                <p class="text-gray-600">
+                    Gerencie os animais.
+                </p>
+
+            </div>
+
+            <div id="listaAnimais" class="space-y-4"></div>
         </div>
 
-        <div class="text-center mt-16 mb-8">
-            <h2 class="text-3xl font-bold text-gray-800">Adotantes Cadastrados</h2>
-            <p class="text-gray-600">Gerencie o status dos adotantes e ative quem estiver pronto.</p>
-            <div class="w-24 h-1 bg-green-500 mx-auto mt-4 rounded-full"></div>
+        <!-- ABA ADOTANTES -->
+        <div id="abaAdotantes" class="hidden">
+
+            <div class="text-center mb-8">
+
+                <h2 class="text-3xl font-bold text-gray-800">
+                    Adotantes
+                </h2>
+
+                <p class="text-gray-600">
+                    Controle dos adotantes.
+                </p>
+
+            </div>
+
+            <div id="listaAdotantes" class="space-y-4"></div>
         </div>
 
-        <div id="listaAdotantes" class="max-w-4xl mx-auto space-y-4 mb-10">
+    </div>
+
+    <!-- MODAL COMPROVANTE -->
+    <div
+        id="modalComprovante"
+        class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50 p-4"
+    >
+        <div class="relative w-full max-w-2xl rounded-3xl bg-white shadow-2xl p-8">
+            <button
+                onclick="fecharModalComprovante()"
+                class="absolute right-6 top-6 rounded-full bg-slate-100 px-4 py-2 text-xl font-bold"
+            >
+                ×
+            </button>
+            <div class="text-center mb-6">
+
+                <h2 class="text-3xl font-bold text-gray-800">
+                    Comprovante de Adoção
+                </h2>
+
+                <p class="text-gray-600">
+                    Imprima este recibo.
+                </p>
+            </div>
+            <div class="space-y-4">
+                <div>
+                    <strong>Adotante:</strong>
+                    <span id="comprovanteAdotante"></span>
+                </div>
+
+                <div>
+                    <strong>Animal:</strong>
+                    <span id="comprovanteAnimal"></span>
+                </div>
+
+                <div>
+                    <strong>Data:</strong>
+                    <span id="comprovanteDataVisita"></span>
+                </div>
+
+                <div>
+                    <strong>Local:</strong>
+                    <span id="comprovanteLocal"></span>
+                </div>
+
+                <div>
+                    <strong>Status:</strong>
+                    <span id="comprovanteStatus"></span>
+                </div>
+
+            </div>
+
+            <div class="mt-8 flex gap-3 justify-end">
+
+                <button
+                    onclick="fecharModalComprovante()"
+                    class="rounded-3xl border border-gray-300 bg-white px-6 py-3 font-bold"
+                >
+                    Fechar
+                </button>
+
+                <button
+                    onclick="imprimirComprovante()"
+                    class="rounded-3xl bg-green-600 px-6 py-3 font-bold text-white"
+                >
+                    Imprimir
+                </button>
+
+            </div>
         </div>
     </div>
 
+    <!-- SCRIPT -->
     <script>
+
+        let animaisCache = [];
+
         function getAdminToken() {
             return localStorage.getItem('adminToken');
         }
 
         function getAdminHeaders() {
+
             const token = getAdminToken();
+
             return {
                 'Content-Type': 'application/json',
                 Authorization: token ? `Bearer ${token}` : ''
             };
         }
 
-        async function carregarPedidos() {
-            const container = document.getElementById('listaPedidos');
+        async function validarTokenAdmin() {
+
             const token = getAdminToken();
+
             if (!token) {
-                container.innerHTML = `
-                    <div class="text-center p-10 bg-white rounded-lg shadow">
-                        <p class="text-red-600">Faça login como administrador para ver as solicitações.</p>
-                    </div>`;
-                return;
+                return false;
             }
 
             try {
+
+                const response = await fetch('/admin/me', {
+                    headers: getAdminHeaders()
+                });
+
+                return response.ok;
+
+            } catch (error) {
+
+                console.error(error);
+                return false;
+            }
+        }
+
+        (async function () {
+
+            const isAdmin = await validarTokenAdmin();
+
+            document.querySelectorAll('.show-for-admin').forEach((elemento) => {
+                elemento.style.display = isAdmin ? '' : 'none';
+            });
+
+            if (!isAdmin) {
+
+                alert('Acesso restrito.');
+
+                localStorage.removeItem('adminToken');
+
+                window.location.href = 'admin-login.html';
+            }
+
+        })();
+
+        function mostrarAba(aba) {
+
+            document
+                .getElementById('abaSolicitacoes')
+                .classList.add('hidden');
+
+            document
+                .getElementById('abaAnimais')
+                .classList.add('hidden');
+
+            document
+                .getElementById('abaAdotantes')
+                .classList.add('hidden');
+
+            if (aba === 'solicitacoes') {
+                document
+                    .getElementById('abaSolicitacoes')
+                    .classList.remove('hidden');
+            }
+
+            if (aba === 'animais') {
+                document
+                    .getElementById('abaAnimais')
+                    .classList.remove('hidden');
+            }
+
+            if (aba === 'adotantes') {
+                document
+                    .getElementById('abaAdotantes')
+                    .classList.remove('hidden');
+            }
+        }
+
+        async function carregarPedidos() {
+
+            const container = document.getElementById('listaPedidos');
+
+            try {
+
                 const response = await fetch('/adocoes/listar', {
                     headers: getAdminHeaders()
                 });
+
                 const pedidos = await response.json();
 
                 if (!response.ok) {
+
                     container.innerHTML = `
-                        <div class="text-center p-10 bg-white rounded-lg shadow">
-                            <p class="text-red-600">${pedidos.erro || 'Não foi possível carregar as solicitações.'}</p>
-                        </div>`;
+                        <div class="bg-white p-6 rounded-lg shadow">
+                            Erro ao carregar pedidos.
+                        </div>
+                    `;
+
                     return;
                 }
 
-                if (pedidos.length === 0) {
+                if (!pedidos.length) {
+
                     container.innerHTML = `
-                        <div class="text-center p-10 bg-white rounded-lg shadow">
-                            <p class="text-gray-500">Não há solicitações pendentes no momento. ✨</p>
-                        </div>`;
+                        <div class="bg-white p-6 rounded-lg shadow">
+                            Nenhuma solicitação encontrada.
+                        </div>
+                    `;
+
                     return;
                 }
 
-                container.innerHTML = pedidos.map(p => `
-                    <div class="bg-white p-6 rounded-lg shadow-md flex justify-between items-center border-l-8 border-green-600">
-                        <div>
-                            <p class="text-sm text-gray-500 uppercase font-bold text-xs">Candidato a Adotante:</p>
-                            <p class="text-xl font-bold text-gray-800">${p.Adotante.nome}</p>
-                            <p class="text-gray-600">📍 ${p.Adotante.endereco}</p>
-                            <div class="mt-3 inline-block bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-bold">
-                                🐶 Animal: ${p.Animal.nome}
+                container.innerHTML = pedidos.map((pedido) => {
+
+                    return `
+                        <div class="bg-white p-6 rounded-lg shadow">
+
+                            <h3 class="text-xl font-bold mb-2">
+                                ${pedido.Adotante.nome}
+                            </h3>
+
+                            <p class="text-gray-600">
+                                Animal: ${pedido.Animal.nome}
+                            </p>
+
+                            <div class="mt-4">
+
+                                <button
+                                    onclick="decidir(${pedido.id_adocao}, 'finalizado')"
+                                    class="bg-green-600 text-white px-4 py-2 rounded-lg"
+                                >
+                                    Aprovar
+                                </button>
+
+                                <button
+                                    onclick="decidir(${pedido.id_adocao}, 'reprovado')"
+                                    class="bg-red-600 text-white px-4 py-2 rounded-lg ml-2"
+                                >
+                                    Reprovar
+                                </button>
+
                             </div>
+
                         </div>
-                        <div class="flex flex-col gap-2">
-                            <button onclick="decidir(${p.id_adocao}, 'finalizado')" 
-                                    class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg font-bold shadow transition">
-                                Aprovar
-                            </button>
-                            <button onclick="decidir(${p.id_adocao}, 'reprovado')" 
-                                    class="bg-red-50 hover:bg-red-100 text-red-700 px-6 py-2 rounded-lg font-bold border border-red-200 transition">
-                                Reprovar
-                            </button>
-                        </div>
-                    </div>
-                `).join('');
+                    `;
+
+                }).join('');
+
             } catch (error) {
-                console.error("Erro ao carregar pedidos:", error);
+
+                console.error(error);
             }
         }
 
         async function decidir(id, status) {
-            const acao = status === 'finalizado' ? 'APROVAR' : 'REPROVAR';
-            const confirmar = confirm(`Deseja realmente ${acao} este pedido de adoção?`);
-            if (!confirmar) return;
-
-            const response = await fetch(`/adocoes/decidir/${id}`, {
-                method: 'PATCH',
-                headers: getAdminHeaders(),
-                body: JSON.stringify({ status })
-            });
-
-            if (response.ok) {
-                alert('✅ Status atualizado com sucesso!');
-                carregarPedidos();
-            } else {
-                const error = await response.json();
-                alert(`❌ ${error.erro || 'Erro ao atualizar status.'}`);
-            }
-        }
-
-        async function carregarAdotantes() {
-            const container = document.getElementById('listaAdotantes');
-            const token = getAdminToken();
-            if (!token) {
-                container.innerHTML = `
-                    <div class="text-center p-10 bg-white rounded-lg shadow">
-                        <p class="text-red-600">Faça login como administrador para ver os adotantes.</p>
-                    </div>`;
-                return;
-            }
 
             try {
-                const response = await fetch('/adotantes/listar', {
-                    headers: getAdminHeaders()
+
+                const response = await fetch(`/adocoes/decidir/${id}`, {
+
+                    method: 'PATCH',
+
+                    headers: getAdminHeaders(),
+
+                    body: JSON.stringify({
+                        status
+                    })
                 });
-                const adotantes = await response.json();
 
-                if (!response.ok) {
-                    container.innerHTML = `
-                        <div class="text-center p-10 bg-white rounded-lg shadow">
-                            <p class="text-red-600">${adotantes.erro || 'Não foi possível carregar os adotantes.'}</p>
-                        </div>`;
-                    return;
+                const resultado = await response.json();
+
+                if (response.ok) {
+
+                    alert('Status atualizado.');
+
+                    carregarPedidos();
+
+                } else {
+
+                    alert(resultado.erro || 'Erro.');
                 }
 
-                if (adotantes.length === 0) {
-                    container.innerHTML = `
-                        <div class="text-center p-10 bg-white rounded-lg shadow">
-                            <p class="text-gray-500">Nenhum adotante cadastrado ainda.</p>
-                        </div>`;
-                    return;
-                }
-
-                container.innerHTML = adotantes.map(a => `
-                    <div class="bg-white p-6 rounded-lg shadow-md flex flex-col md:flex-row md:justify-between md:items-center border border-gray-200">
-                        <div>
-                            <p class="text-sm text-gray-500 uppercase font-bold text-xs">Adotante:</p>
-                            <p class="text-xl font-bold text-gray-800">${a.nome}</p>
-                            <p class="text-gray-600">📍 ${a.endereco || 'Não informado'}</p>
-                            <p class="text-gray-600">📞 ${a.telefone || 'Sem telefone'}</p>
-                        </div>
-                        <div class="mt-4 md:mt-0 flex flex-col gap-3 items-start md:items-end">
-                            <span class="inline-flex items-center gap-2 rounded-full px-3 py-1 text-sm font-semibold ${a.situacao === 'Ativo' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}">
-                                ${a.situacao}
-                            </span>
-                            <div class="flex gap-2">
-                                <button onclick="alterarStatusAdotante(${a.id_adotante}, 'Ativo')" class="px-4 py-2 rounded-lg font-bold text-white ${a.situacao === 'Ativo' ? 'bg-gray-400 cursor-not-allowed' : 'bg-green-600 hover:bg-green-700'}" ${a.situacao === 'Ativo' ? 'disabled' : ''}>
-                                    Ativar
-                                </button>
-                                <button onclick="alterarStatusAdotante(${a.id_adotante}, 'Inativo')" class="px-4 py-2 rounded-lg font-bold text-white ${a.situacao === 'Inativo' ? 'bg-gray-400 cursor-not-allowed' : 'bg-red-600 hover:bg-red-700'}" ${a.situacao === 'Inativo' ? 'disabled' : ''}>
-                                    Inativar
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                `).join('');
             } catch (error) {
-                console.error('Erro ao carregar adotantes:', error);
+
+                console.error(error);
             }
         }
 
         async function carregarAnimais() {
+
             const container = document.getElementById('listaAnimais');
-            const token = getAdminToken();
-            if (!token) {
-                container.innerHTML = `
-                    <div class="text-center p-10 bg-white rounded-lg shadow">
-                        <p class="text-red-600">Faça login como administrador para ver os animais.</p>
-                    </div>`;
-                return;
-            }
 
             try {
+
                 const response = await fetch('/animais/listar/todos', {
                     headers: getAdminHeaders()
                 });
+
                 const animais = await response.json();
 
-                if (!response.ok) {
-                    container.innerHTML = `
-                        <div class="text-center p-10 bg-white rounded-lg shadow">
-                            <p class="text-red-600">${animais.erro || 'Não foi possível carregar os animais.'}</p>
-                        </div>`;
-                    return;
-                }
+                animaisCache = animais;
 
-                if (animais.length === 0) {
-                    container.innerHTML = `
-                        <div class="text-center p-10 bg-white rounded-lg shadow">
-                            <p class="text-gray-500">Nenhum animal cadastrado ainda.</p>
-                        </div>`;
-                    return;
-                }
+                container.innerHTML = animais.map((animal) => {
 
-                container.innerHTML = animais.map(animal => `
-                    <div class="bg-white p-6 rounded-lg shadow-md flex flex-col md:flex-row md:justify-between md:items-center border border-gray-200">
-                        <div>
-                            <p class="text-sm text-gray-500 uppercase font-bold text-xs">Animal:</p>
-                            <p class="text-xl font-bold text-gray-800">${animal.nome}</p>
-                            <p class="text-gray-600">📍 ${animal.idade || 'Idade não informada'}</p>
-                            <p class="text-gray-600">${animal.descricao || 'Sem descrição'}</p>
-                        </div>
-                        <div class="mt-4 md:mt-0 flex flex-col gap-3 items-start md:items-end">
-                            <span class="inline-flex items-center gap-2 rounded-full px-3 py-1 text-sm font-semibold ${animal.status === 'disponivel' ? 'bg-green-100 text-green-800' : animal.status === 'adotado' ? 'bg-blue-100 text-blue-800' : 'bg-red-100 text-red-800'}">
-                                ${animal.status}
-                            </span>
-                            <div class="flex gap-2">
-                                <button onclick="alterarStatusAnimal(${animal.id_animal}, 'disponivel')" class="px-4 py-2 rounded-lg font-bold text-white ${animal.status === 'disponivel' ? 'bg-gray-400 cursor-not-allowed' : 'bg-green-600 hover:bg-green-700'}" ${animal.status === 'disponivel' ? 'disabled' : ''}>
-                                    Disponível
-                                </button>
-                                <button onclick="alterarStatusAnimal(${animal.id_animal}, 'indisponivel')" class="px-4 py-2 rounded-lg font-bold text-white ${animal.status === 'indisponivel' ? 'bg-gray-400 cursor-not-allowed' : 'bg-yellow-600 hover:bg-yellow-700'}" ${animal.status === 'indisponivel' ? 'disabled' : ''}>
-                                    Indisponível
-                                </button>
-                                <button onclick="alterarStatusAnimal(${animal.id_animal}, 'adotado')" class="px-4 py-2 rounded-lg font-bold text-white ${animal.status === 'adotado' ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'}" ${animal.status === 'adotado' ? 'disabled' : ''}>
-                                    Marcado como adotado
-                                </button>
+                    const statusClasse =
+                        animal.status === 'disponivel'
+                            ? 'bg-green-100 text-green-800'
+                            : 'bg-red-100 text-red-800';
+
+                    return `
+                        <div class="bg-white p-6 rounded-lg shadow">
+
+                            <div class="flex gap-4 items-center">
+
+                                <img
+                                    src="${animal.foto || ''}"
+                                    class="w-24 h-24 rounded-xl object-cover"
+                                />
+
+                                <div>
+
+                                    <h3 class="text-xl font-bold">
+                                        ${animal.nome}
+                                    </h3>
+
+                                    <p>
+                                        ${animal.descricao || ''}
+                                    </p>
+
+                                    <span class="${statusClasse} px-3 py-1 rounded-full text-sm">
+                                        ${animal.status}
+                                    </span>
+
+                                </div>
+
                             </div>
+
                         </div>
-                    </div>
-                `).join('');
+                    `;
+
+                }).join('');
+
             } catch (error) {
-                console.error('Erro ao carregar animais:', error);
+
+                console.error(error);
             }
         }
 
-        async function alterarStatusAnimal(id, status) {
-            const confirmar = confirm(`Deseja definir o status do animal como ${status}?`);
-            if (!confirmar) return;
+        async function carregarAdotantes() {
 
-            const response = await fetch(`/animais/status/${id}`, {
-                method: 'PATCH',
-                headers: getAdminHeaders(),
-                body: JSON.stringify({ status })
-            });
+            const container = document.getElementById('listaAdotantes');
 
-            if (response.ok) {
-                alert('✅ Status do animal atualizado com sucesso!');
-                carregarAnimais();
-            } else {
-                const erro = await response.json();
-                alert(`❌ ${erro.erro || 'Erro ao atualizar status do animal.'}`);
+            try {
+
+                const response = await fetch('/adotantes/listar', {
+                    headers: getAdminHeaders()
+                });
+
+                const adotantes = await response.json();
+
+                container.innerHTML = adotantes.map((adotante) => {
+
+                    return `
+                        <div class="bg-white p-6 rounded-lg shadow">
+
+                            <h3 class="text-xl font-bold">
+                                ${adotante.nome}
+                            </h3>
+
+                            <p>
+                                ${adotante.endereco || ''}
+                            </p>
+
+                            <p>
+                                ${adotante.telefone || ''}
+                            </p>
+
+                        </div>
+                    `;
+
+                }).join('');
+
+            } catch (error) {
+
+                console.error(error);
             }
         }
 
-        async function alterarStatusAdotante(id, situacao) {
-            const confirmar = confirm(`Deseja alterar o status do adotante para ${situacao}?`);
-            if (!confirmar) return;
+        function mostrarComprovante(comprovante) {
 
-            const response = await fetch(`/adotantes/status/${id}`, {
-                method: 'PATCH',
-                headers: getAdminHeaders(),
-                body: JSON.stringify({ situacao })
-            });
+            document.getElementById('comprovanteAdotante').innerText =
+                comprovante.nome_adotante || '-';
 
-            if (response.ok) {
-                alert('✅ Status atualizado com sucesso!');
-                carregarAdotantes();
-            } else {
-                const erro = await response.json();
-                alert(`❌ ${erro.erro || 'Erro ao atualizar status.'}`);
-            }
+            document.getElementById('comprovanteAnimal').innerText =
+                comprovante.nome_animal || '-';
+
+            document.getElementById('comprovanteDataVisita').innerText =
+                comprovante.data_visita || '-';
+
+            document.getElementById('comprovanteLocal').innerText =
+                comprovante.local_visita || '-';
+
+            document.getElementById('comprovanteStatus').innerText =
+                comprovante.status || '-';
+
+            const modal = document.getElementById('modalComprovante');
+
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
         }
 
-        // Inicia a carga de dados ao abrir a página
+        function fecharModalComprovante() {
+
+            const modal = document.getElementById('modalComprovante');
+
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        function imprimirComprovante() {
+
+            const adotante =
+                document.getElementById('comprovanteAdotante').innerText;
+
+            const animal =
+                document.getElementById('comprovanteAnimal').innerText;
+
+            const dataVisita =
+                document.getElementById('comprovanteDataVisita').innerText;
+
+            const local =
+                document.getElementById('comprovanteLocal').innerText;
+
+            const status =
+                document.getElementById('comprovanteStatus').innerText;
+
+            const conteudo = `
+                <!DOCTYPE html>
+
+                <html lang="pt-br">
+
+                <head>
+
+                    <meta charset="UTF-8">
+
+                    <title>Comprovante</title>
+
+                    <style>
+
+                        body {
+                            font-family: Arial;
+                            padding: 24px;
+                        }
+
+                        .box {
+                            border: 1px solid #ccc;
+                            padding: 20px;
+                            border-radius: 12px;
+                        }
+
+                    </style>
+
+                </head>
+
+                <body>
+
+                    <h1>Comprovante de Adoção</h1>
+
+                    <div class="box">
+
+                        <p><strong>Adotante:</strong> ${adotante}</p>
+
+                        <p><strong>Animal:</strong> ${animal}</p>
+
+                        <p><strong>Data:</strong> ${dataVisita}</p>
+
+                        <p><strong>Local:</strong> ${local}</p>
+
+                        <p><strong>Status:</strong> ${status}</p>
+
+                    </div>
+                    <script>
+                        window.print();
+                    <\/script>
+                </body>
+                </html>
+            `;
+
+            const printWindow = window.open('', '_blank');
+
+            if (!printWindow) {
+                return;
+            }
+
+            printWindow.document.write(conteudo);
+
+            printWindow.document.close();
+        }
+
         carregarPedidos();
         carregarAnimais();
         carregarAdotantes();
+
     </script>
+
 </body>
 </html>

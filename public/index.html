@@ -11,108 +11,247 @@
     <nav class="bg-green-700 p-4 shadow-md text-white">
         <div class="container mx-auto flex justify-between items-center">
             <a href="index.html" class="text-xl font-bold flex items-center gap-2">🐾 Sistema Adoção de Animais</a>
-            <div class="space-x-6">
-                <a href="index.html" class="font-bold border-b-2 border-white pb-1">Home</a>
-                <a href="cadastro.html" class="hover:text-green-200 transition">Cadastrar</a>
-                <a href="admin.html" class="hover:text-green-200 transition">Divulgar</a>
-                <a href="painel-responsavel.html" class="hover:text-green-200 border-l pl-4 border-green-500">Painel ADM</a>
+            <div class="space-x-6 flex items-center">
+                <a href="vitrine.html" class="hover:text-green-200 transition">Vitrine</a>
+                <a href="index.html" class="font-bold border-b-2 border-white pb-1">Cadastrar Adotante</a>
+                <a href="admin.html" class="hover:text-green-200 transition show-for-admin">Cadastrar Animal</a>
+                <div class="relative inline-block group">
+                    <a href="painel-responsavel.html" class="hover:text-green-200 border-l pl-4 border-green-500">Painel ADM ▾</a>
+                    <div class="absolute right-0 mt-2 hidden group-hover:block bg-white text-gray-800 rounded shadow-lg min-w-[200px]">
+                        <a href="painel-responsavel.html" class="block px-4 py-2 hover:bg-gray-100">Entrar Painel</a>
+                        <a href="admin-register.html" class="block px-4 py-2 hover:bg-gray-100 show-for-admin">Cadastrar Administrador</a>
+                    </div>
+                </div>
             </div>
         </div>
     </nav>
 
-    <div class="relative h-[450px] flex items-center justify-center bg-cover bg-center" 
-         style="background-image: url('fundo.jpg');"> 
-        
-        <div class="absolute inset-0 bg-black/50"></div>
+    <script>
+        (function(){
+            const isAdmin = !!localStorage.getItem('adminToken');
+            const isAdotante = !!localStorage.getItem('adotante');
+            document.querySelectorAll('.show-for-admin').forEach(el => el.style.display = isAdmin ? '' : 'none');
 
+            // Protect admin pages
+            const adminPages = ['admin.html','painel-responsavel.html'];
+            const path = window.location.pathname.split('/').pop();
+            if (adminPages.includes(path) && !isAdmin) {
+                alert('Acesso restrito: apenas administradores podem acessar esta página.');
+                window.location.href = 'admin-login.html';
+            }
+        })();
+    </script>
+
+    <!-- Hero / Janela inicial -->
+    <div class="relative h-[450px] flex items-center justify-center bg-cover bg-center" 
+         style="background-image: url('fundo.jpg');">
+        <div class="absolute inset-0 bg-black/50"></div>
         <div class="relative z-10 w-full max-w-3xl text-center px-4 flex flex-col items-center">
             <h1 class="text-4xl md:text-6xl font-extrabold text-white drop-shadow-2xl leading-tight">
                 Encontre seu novo melhor amigo
             </h1>
-            
-            <p class="text-xl text-gray-100 mt-6 font-light drop-shadow-md">
+            <p class="text-xl text-gray-100 mt-6 font-light drop-shadow-md text-center">
                 Conectando animais resgatados a lares amorosos. Explore nossa lista e inicie um processo de adoção responsável.
             </p>
-            
+            <div class="flex gap-3 mt-8">
+                <button onclick="abrirModalCadastro()" class="rounded-3xl bg-green-600 px-6 py-3 text-lg font-bold text-white shadow-lg transition hover:bg-green-700">Cadastrar como Adotante</button>
+                <button onclick="abrirModalAdm()" class="rounded-3xl bg-white/10 border border-white px-6 py-3 text-lg font-semibold text-white hover:bg-white/20 transition">Painel ADM</button>
+            </div>
             <div class="w-32 h-1.5 bg-green-500 mt-8 rounded-full shadow-lg"></div>
         </div>
     </div>
 
+    <!-- Conteúdo abaixo (pode permanecer vazio ou ter informações adicionais) -->
     <div class="container mx-auto p-8">
-        <h2 class="text-3xl font-bold text-gray-800 mb-8 border-l-8 border-green-600 pl-4">Animais Disponíveis</h2>
-        
-        <div id="listaAnimais" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            </div>
+        <h2 class="text-3xl font-bold text-gray-800 mb-8 border-l-8 border-green-600 pl-4">Como funciona</h2>
+        <p class="text-gray-600">Cadastre-se como adotante para poder acessar a vitrine completa e enviar solicitações de adoção. Após o cadastro, você será redirecionado automaticamente para a vitrine.</p>
+    </div>
+
+    <!-- Modal de Cadastro -->
+    <div id="modalCadastro" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50 p-4">
+        <div class="relative bg-white rounded-xl shadow-lg w-full max-w-md p-6">
+            <button onclick="fecharModalCadastro()" class="absolute top-4 right-4 text-2xl font-bold text-gray-600">×</button>
+            <h2 class="text-2xl font-bold mb-2 text-gray-800">Seja um Adotante</h2>
+            <p class="text-gray-600 mb-4 text-sm">Preencha seus dados para iniciar um processo de adoção.</p>
+
+            <form id="formCadastro" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Nome Completo</label>
+                    <input type="text" id="nome" placeholder="Ex: João Silva" class="border border-gray-300 p-2.5 w-full rounded-lg focus:ring-2 focus:ring-green-500 focus:outline-none" required>
+                </div>
+                 <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Data de Nascimento</label>
+                    <input type="text" id="dataNascimento" placeholder="00/00/0000" class="border border-gray-300 p-2.5 w-full rounded-lg focus:ring-2 focus:ring-green-500 focus:outline-none" required>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">CPF</label>
+                    <input type="text" id="cpf" placeholder="000.000.000-00" class="border border-gray-300 p-2.5 w-full rounded-lg focus:ring-2 focus:ring-green-500 focus:outline-none" required>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Telefone</label>
+                    <input type="text" id="telefone" placeholder="(00) 00000-0000" class="border border-gray-300 p-2.5 w-full rounded-lg focus:ring-2 focus:ring-green-500 focus:outline-none">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Endereço</label>
+                    <input type="text" id="endereco" placeholder="Rua, Bairro" class="border border-gray-300 p-2.5 w-full rounded-lg focus:ring-2 focus:ring-green-500 focus:outline-none" required>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Número da casa</label>
+                    <input type="text" id="numero" placeholder="Número da casa" class="border border-gray-300 p-2.5 w-full rounded-lg focus:ring-2 focus:ring-green-500 focus:outline-none">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Cidade</label>
+                    <input type="text" id="cidade" placeholder="Cidade" class="border border-gray-300 p-2.5 w-full rounded-lg focus:ring-2 focus:ring-green-500 focus:outline-none">
+                </div>
+                 <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1"> UF</label>
+                    <input type="text" id="uf" placeholder="UF" class="border border-gray-300 p-2.5 w-full rounded-lg focus:ring-2 focus:ring-green-500 focus:outline-none">
+                </div>
+                <button type="submit" class="bg-green-600 hover:bg-green-700 text-white font-bold p-3 w-full rounded-lg shadow-md transition-colors mt-4">
+                    Gravar Cadastro
+                </button>
+            </form>
+            <p id="mensagem" class="mt-4 text-center font-bold text-green-700"></p>
+        </div>
+    </div>
+
+    <!-- Modal de Login ADM -->
+    <div id="modalAdm" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50 p-4">
+        <div class="relative bg-white rounded-xl shadow-lg w-full max-w-md p-6">
+            <button onclick="fecharModalAdm()" class="absolute top-4 right-4 text-2xl font-bold text-gray-600">×</button>
+            <h2 class="text-2xl font-bold mb-2 text-gray-800">Login Administrador</h2>
+            <p class="text-gray-600 mb-4 text-sm">Faça login para acessar o painel administrativo.</p>
+
+            <form id="formAdminLogin" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                    <input type="email" id="adminEmail" placeholder="admin@exemplo.com" class="border border-gray-300 p-2.5 w-full rounded-lg focus:ring-2 focus:ring-green-500 focus:outline-none" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Senha</label>
+                    <input type="password" id="adminSenha" placeholder="Senha" class="border border-gray-300 p-2.5 w-full rounded-lg focus:ring-2 focus:ring-green-500 focus:outline-none" required>
+                </div>
+                <button type="submit" class="bg-green-600 hover:bg-green-700 text-white font-bold p-3 w-full rounded-lg shadow-md transition-colors mt-4">Entrar</button>
+            </form>
+            <p id="mensagemAdm" class="mt-4 text-center font-bold text-green-700"></p>
+        </div>
     </div>
 
     <script>
-    async function carregarAnimais() {
-        try {
-            const response = await fetch('/animais/listar');
-            const animais = await response.json();
-            const container = document.getElementById('listaAnimais');
-
-            if (animais.length === 0) {
-                container.innerHTML = '<p class="text-gray-500 text-center col-span-full py-10 text-xl italic">Nenhum animal disponível no momento. Volte logo! 🐾</p>';
-                return;
-            }
-
-            container.innerHTML = animais.map(animal => `
-                <div class="bg-white rounded-2xl shadow-md overflow-hidden border border-gray-100 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2">
-                    <div class="relative h-56 overflow-hidden">
-                        <img src="${animal.foto || 'https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?q=80&w=500'}" 
-                             class="w-full h-full object-cover" 
-                             alt="Foto de ${animal.nome}">
-                        <div class="absolute top-4 right-4 bg-green-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg">
-                            DISPONÍVEL
-                        </div>
-                    </div>
-                    
-                    <div class="p-6">
-                        <h2 class="text-2xl font-bold text-gray-800 mb-1">${animal.nome}</h2>
-                        <p class="text-green-700 font-bold text-sm flex items-center gap-1 mb-3">
-                            📍 ${animal.idade}
-                        </p>
-                        <p class="text-gray-600 text-sm leading-relaxed mb-6 h-12 overflow-hidden">
-                            ${animal.descricao}
-                        </p>
-                        
-                        <button onclick="solicitarAdocao(${animal.id_animal})" 
-                                class="w-full bg-green-600 hover:bg-green-700 text-white font-extrabold py-3 rounded-xl transition-all shadow-md active:scale-95">
-                            Desejo Adotar
-                        </button>
-                    </div>
-                </div>
-            `).join('');
-        } catch (error) {
-            console.error("Erro ao carregar animais:", error);
+        function abrirModalCadastro(){
+            const modal = document.getElementById('modalCadastro');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
         }
-    }
+        function fecharModalCadastro(){
+            const modal = document.getElementById('modalCadastro');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
 
-    async function solicitarAdocao(idAnimal) {
-        // ID 1 simulando o usuário que você cadastrou no 'cadastro.html'
-        const idAdotanteLogado = 1; 
+        function atualizarLinkVitrine() {
+            const link = document.querySelector('a[href="vitrine.html"]');
+            const adotante = localStorage.getItem('adotante');
+            if(!adotante) {
+                link.classList.add('opacity-60', 'pointer-events-none');
+            } else {
+                link.classList.remove('opacity-60', 'pointer-events-none');
+            }
+        }
 
-        if(!confirm("Deseja enviar uma solicitação de adoção?")) return;
+        atualizarLinkVitrine();
 
-        const response = await fetch('/adocoes/solicitar', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ id_adotante: idAdotanteLogado, id_animal: idAnimal })
+        document.getElementById('formCadastro').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const dados = {
+                nome: document.getElementById('nome').value,
+                cpf: document.getElementById('cpf').value,
+                telefone: document.getElementById('telefone').value,
+                endereco: document.getElementById('endereco').value,
+                numero: document.getElementById('numero').value,
+                cidade: document.getElementById('cidade').value,
+            };
+
+            try {
+                const response = await fetch('/adotantes/cadastrar', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(dados)
+                });
+
+                const resultado = await response.json();
+                const msgElement = document.getElementById('mensagem');
+                msgElement.innerText = resultado.mensagem || resultado.erro;
+
+                if(response.ok) {
+                    if(resultado.dados) {
+                        localStorage.setItem('adotante', JSON.stringify(resultado.dados));
+                    }
+                    document.getElementById('formCadastro').reset();
+                    msgElement.classList.remove('text-red-600');
+                    msgElement.classList.add('text-green-700');
+                    atualizarLinkVitrine();
+                    fecharModalCadastro();
+                    
+                    window.location.href = 'vitrine.html';
+                } else {
+                    msgElement.classList.remove('text-green-700');
+                    msgElement.classList.add('text-red-600');
+                }
+            } catch (err) {
+                console.error("Erro ao cadastrar:", err);
+            }
         });
 
-        const resultado = await response.json();
-        
-        if (response.ok) {
-            alert("✅ " + resultado.mensagem);
-            carregarAnimais(); // Atualiza a lista
-        } else {
-            alert("❌ Erro: " + resultado.erro);
-        }
-    }
+            
+            function abrirModalAdm(){
+                const modal = document.getElementById('modalAdm');
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+            }
+            function fecharModalAdm(){
+                const modal = document.getElementById('modalAdm');
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }
 
-    // Inicialização
-    carregarAnimais();
+            document.getElementById('formAdminLogin').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const email = document.getElementById('adminEmail').value;
+                const senha = document.getElementById('adminSenha').value;
+
+                try {
+                    const response = await fetch('/admin/login', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email, senha })
+                    });
+
+                    const resultado = await response.json();
+                    const msg = document.getElementById('mensagemAdm');
+                    msg.innerText = resultado.mensagem || resultado.erro;
+
+                    if (response.ok) {
+                       
+                        if (resultado.token) localStorage.setItem('adminToken', resultado.token);
+                        if (resultado.admin) localStorage.setItem('admin', JSON.stringify(resultado.admin));
+                        msg.classList.remove('text-red-600');
+                        msg.classList.add('text-green-700');
+                        fecharModalAdm();
+                        window.location.href = 'painel-responsavel.html';
+                    } else {
+                        msg.classList.remove('text-green-700');
+                        msg.classList.add('text-red-600');
+                    }
+                } catch (err) {
+                    console.error('Erro no login admin:', err);
+                }
+            });
     </script>
 </body>
 </html>

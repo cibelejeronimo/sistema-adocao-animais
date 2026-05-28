@@ -103,7 +103,7 @@
 
             </div>
 
-            <div class="flex gap-2 flex-wrap">
+            <div class="flex flex-wrap items-center gap-2">
 
                 <button
                     onclick="mostrarAba('solicitacoes')"
@@ -121,6 +121,12 @@
                     onclick="mostrarAba('adotantes')"
                     class="rounded-full border border-green-600 bg-white px-5 py-3 text-sm font-bold text-green-700">
                     Adotantes
+                </button>
+
+                <button
+                    onclick="voltarPagina()"
+                    class="rounded-full border border-gray-300 bg-white px-5 py-3 text-sm font-bold text-gray-700 hover:bg-gray-100">
+                    Voltar
                 </button>
 
             </div>
@@ -184,6 +190,81 @@
 
         </div>
 
+    </div>
+
+    <div id="modalEditarAnimal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+        <div class="w-full max-w-2xl rounded-3xl bg-white p-6 shadow-2xl">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-2xl font-bold text-gray-800">Editar Animal</h2>
+                <button onclick="fecharModalEditar()" class="text-gray-500 hover:text-gray-700">Fechar</button>
+            </div>
+            <form id="formEditarAnimal" class="space-y-4" onsubmit="event.preventDefault(); salvarEdicaoAnimal();">
+                <input type="hidden" id="editarAnimalId" />
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <label class="block">
+                        <span class="text-gray-700">Nome</span>
+                        <input id="editarNome" type="text" class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm" required />
+                    </label>
+                    <label class="block">
+                        <span class="text-gray-700">Idade</span>
+                        <input id="editarIdade" type="text" class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm" />
+                    </label>
+                    <label class="block">
+                        <span class="text-gray-700">Porte</span>
+                        <input id="editarPorte" type="text" class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm" />
+                    </label>
+                    <label class="block">
+                        <span class="text-gray-700">Vacinas</span>
+                        <input id="editarVacinas" type="text" class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm" />
+                    </label>
+                    <label class="block md:col-span-2">
+                        <span class="text-gray-700">Temperamento</span>
+                        <input id="editarTemperamento" type="text" class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm" />
+                    </label>
+                    <label class="block md:col-span-2">
+                        <span class="text-gray-700">Descrição</span>
+                        <textarea id="editarDescricao" rows="3" class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm"></textarea>
+                    </label>
+                    <label class="block md:col-span-2">
+                        <span class="text-gray-700">URL da foto</span>
+                        <input id="editarFoto" type="text" class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm" placeholder="uploads/animais/arquivo.jpg" />
+                    </label>
+                    <label class="block md:col-span-2">
+                        <span class="text-gray-700">Status</span>
+                        <select id="editarStatus" class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm">
+                            <option value="disponivel">Disponível</option>
+                            <option value="adotado">Adotado</option>
+                            <option value="indisponivel">Indisponível</option>
+                        </select>
+                    </label>
+                </div>
+                <div class="flex justify-end gap-3">
+                    <button type="button" onclick="fecharModalEditar()" class="rounded-xl border border-gray-300 px-5 py-3 text-sm font-bold text-gray-700">Cancelar</button>
+                    <button type="submit" class="rounded-xl bg-green-600 px-5 py-3 text-sm font-bold text-white hover:bg-green-700">Salvar alterações</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="modalComprovante" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+        <div class="w-full max-w-2xl rounded-3xl bg-white p-6 shadow-2xl">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-2xl font-bold text-gray-800">Comprovante de Visita</h2>
+                <button onclick="fecharModalComprovante()" class="text-gray-500 hover:text-gray-700">Fechar</button>
+            </div>
+            <div id="conteudoComprovante" class="space-y-3 text-gray-700">
+                <p><strong>Nº Solicitação:</strong> <span id="compId"></span></p>
+                <p><strong>Nome do adotante:</strong> <span id="compNomeAdotante"></span></p>
+                <p><strong>Animal:</strong> <span id="compNomeAnimal"></span></p>
+                <p><strong>Data e horário da visita:</strong> <span id="compDataVisita"></span></p>
+                <p><strong>Local da visita:</strong> <span id="compLocal"></span></p>
+                <p><strong>Status:</strong> <span id="compStatus"></span></p>
+            </div>
+            <div class="mt-6 flex justify-end gap-3">
+                <button onclick="fecharModalComprovante()" class="rounded-xl border border-gray-300 px-5 py-3 text-sm font-bold text-gray-700">Fechar</button>
+                <button onclick="imprimirComprovante()" class="rounded-xl bg-green-600 px-5 py-3 text-sm font-bold text-white hover:bg-green-700">Imprimir comprovante</button>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -426,7 +507,11 @@
 
                 if (response.ok) {
 
-                    alert('Adoção aprovada.');
+                    if (resultado.comprovante) {
+                        abrirModalComprovante(resultado.comprovante);
+                    } else {
+                        alert('Adoção aprovada.');
+                    }
 
                     carregarPedidos();
 
@@ -439,6 +524,44 @@
 
                 console.error(error);
             }
+        }
+
+        function abrirModalComprovante(comprovante) {
+            document.getElementById('compId').innerText = comprovante.id_adocao || '';
+            document.getElementById('compNomeAdotante').innerText = comprovante.nome_adotante || '';
+            document.getElementById('compNomeAnimal').innerText = comprovante.nome_animal || '';
+            document.getElementById('compDataVisita').innerText = comprovante.data_visita ? new Date(comprovante.data_visita).toLocaleString('pt-BR') : '';
+            document.getElementById('compLocal').innerText = comprovante.local_visita || 'Canil Local';
+            document.getElementById('compStatus').innerText = comprovante.status || '';
+            document.getElementById('modalComprovante').classList.remove('hidden');
+        }
+
+        function fecharModalComprovante() {
+            document.getElementById('modalComprovante').classList.add('hidden');
+        }
+
+        function imprimirComprovante() {
+            const conteudo = document.getElementById('conteudoComprovante').innerHTML;
+            const janela = window.open('', '_blank');
+            janela.document.write(`
+                <html>
+                    <head>
+                        <title>Comprovante de Visita</title>
+                        <style>
+                            body { font-family: Arial, sans-serif; padding: 20px; }
+                            h1 { font-size: 20px; }
+                            p { margin: 8px 0; }
+                        </style>
+                    </head>
+                    <body>
+                        <h1>Comprovante de Visita</h1>
+                        ${conteudo}
+                    </body>
+                </html>
+            `);
+            janela.document.close();
+            janela.focus();
+            janela.print();
         }
 
         async function decidir(id, status) {
@@ -535,6 +658,29 @@
 
                             </div>
 
+                            <div class="mt-4 flex flex-wrap gap-2">
+                                <button
+                                    onclick="abrirModalEditAnimal(${animal.id_animal})"
+                                    class="rounded-xl bg-blue-600 px-4 py-2 text-sm font-bold text-white hover:bg-blue-700"
+                                >
+                                    Editar
+                                </button>
+
+                                <button
+                                    onclick="alterarStatusAnimal(${animal.id_animal}, 'disponivel')"
+                                    class="rounded-xl bg-green-600 px-4 py-2 text-sm font-bold text-white hover:bg-green-700"
+                                >
+                                    Marcar disponível
+                                </button>
+
+                                <button
+                                    onclick="alterarStatusAnimal(${animal.id_animal}, 'adotado')"
+                                    class="rounded-xl bg-red-600 px-4 py-2 text-sm font-bold text-white hover:bg-red-700"
+                                >
+                                    Marcar adotado
+                                </button>
+                            </div>
+
                         </div>
                     `;
 
@@ -544,6 +690,90 @@
 
                 console.error(error);
             }
+        }
+
+        function abrirModalEditAnimal(id) {
+            const animal = animaisCache.find((item) => item.id_animal === id);
+            if (!animal) {
+                return alert('Animal não encontrado.');
+            }
+
+            document.getElementById('editarAnimalId').value = animal.id_animal;
+            document.getElementById('editarNome').value = animal.nome || '';
+            document.getElementById('editarIdade').value = animal.idade || '';
+            document.getElementById('editarPorte').value = animal.porte || '';
+            document.getElementById('editarVacinas').value = animal.vacinas || '';
+            document.getElementById('editarTemperamento').value = animal.temperamento || '';
+            document.getElementById('editarDescricao').value = animal.descricao || '';
+            document.getElementById('editarFoto').value = animal.foto || '';
+            document.getElementById('editarStatus').value = animal.status || 'disponivel';
+
+            document.getElementById('modalEditarAnimal').classList.remove('hidden');
+        }
+
+        function fecharModalEditar() {
+            document.getElementById('modalEditarAnimal').classList.add('hidden');
+        }
+
+        async function salvarEdicaoAnimal() {
+            const id = document.getElementById('editarAnimalId').value;
+            const dados = {
+                nome: document.getElementById('editarNome').value,
+                idade: document.getElementById('editarIdade').value,
+                porte: document.getElementById('editarPorte').value,
+                vacinas: document.getElementById('editarVacinas').value,
+                temperamento: document.getElementById('editarTemperamento').value,
+                descricao: document.getElementById('editarDescricao').value,
+                foto: document.getElementById('editarFoto').value,
+                status: document.getElementById('editarStatus').value
+            };
+
+            try {
+                const response = await fetch(`/animais/editar/${id}`, {
+                    method: 'PATCH',
+                    headers: getAdminHeaders(),
+                    body: JSON.stringify(dados)
+                });
+
+                const resultado = await response.json();
+
+                if (response.ok) {
+                    alert('Animal atualizado com sucesso.');
+                    fecharModalEditar();
+                    carregarAnimais();
+                } else {
+                    alert(resultado.erro || 'Erro ao atualizar o animal.');
+                }
+            } catch (error) {
+                console.error(error);
+                alert('Erro ao conectar com o servidor.');
+            }
+        }
+
+        async function alterarStatusAnimal(id, status) {
+            try {
+                const response = await fetch(`/animais/status/${id}`, {
+                    method: 'PATCH',
+                    headers: getAdminHeaders(),
+                    body: JSON.stringify({ status })
+                });
+
+                const resultado = await response.json();
+
+                if (response.ok) {
+                    alert(`Status atualizado para ${status}.`);
+                    carregarAnimais();
+                } else {
+                    alert(resultado.erro || 'Erro ao atualizar status.');
+                }
+            } catch (error) {
+                console.error(error);
+                alert('Erro ao conectar com o servidor.');
+            }
+        }
+
+        function voltarPagina() {
+            window.history.back();
         }
 
         async function carregarAdotantes() {

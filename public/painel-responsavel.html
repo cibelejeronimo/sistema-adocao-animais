@@ -91,16 +91,22 @@
         <!-- TOPO -->
         <div class="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between mb-8">
 
-            <div>
+            <div class="flex flex-col gap-4 lg:flex-row lg:items-center">
+                <button
+                    onclick="voltarPagina()"
+                    class="rounded-full border border-gray-300 bg-white px-4 py-2 text-sm font-bold text-gray-700 hover:bg-gray-100">
+                    Voltar
+                </button>
 
-                <h1 class="text-3xl font-bold text-gray-800">
-                    Painel ADM
-                </h1>
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-800">
+                        Painel ADM
+                    </h1>
 
-                <p class="text-gray-600">
-                    Gerencie solicitações, animais e adotantes.
-                </p>
-
+                    <p class="text-gray-600">
+                        Gerencie solicitações, animais e adotantes.
+                    </p>
+                </div>
             </div>
 
             <div class="flex flex-wrap items-center gap-2">
@@ -121,12 +127,6 @@
                     onclick="mostrarAba('adotantes')"
                     class="rounded-full border border-green-600 bg-white px-5 py-3 text-sm font-bold text-green-700">
                     Adotantes
-                </button>
-
-                <button
-                    onclick="voltarPagina()"
-                    class="rounded-full border border-gray-300 bg-white px-5 py-3 text-sm font-bold text-gray-700 hover:bg-gray-100">
-                    Voltar
                 </button>
 
             </div>
@@ -426,6 +426,10 @@
                                 Animal: ${pedido.Animal.nome}
                             </p>
 
+                            <p class="text-gray-600 mb-2">
+                                Local da visita: Av. Galeão 150, Cianorte PR
+                            </p>
+
                             <!-- DATA E HORÁRIO -->
                             <div class="mt-4 mb-4">
 
@@ -531,7 +535,7 @@
             document.getElementById('compNomeAdotante').innerText = comprovante.nome_adotante || '';
             document.getElementById('compNomeAnimal').innerText = comprovante.nome_animal || '';
             document.getElementById('compDataVisita').innerText = comprovante.data_visita ? new Date(comprovante.data_visita).toLocaleString('pt-BR') : '';
-            document.getElementById('compLocal').innerText = comprovante.local_visita || 'Canil Local';
+            document.getElementById('compLocal').innerText = comprovante.local_visita || 'Av. Galeão 150, Cianorte PR';
             document.getElementById('compStatus').innerText = comprovante.status || '';
             document.getElementById('modalComprovante').classList.remove('hidden');
         }

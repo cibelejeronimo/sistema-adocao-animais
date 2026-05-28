@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Painel ADM - Gestão de Adoções</title>
 
     <script src="https://cdn.tailwindcss.com"></script>
@@ -12,6 +13,7 @@
 
     <!-- NAVBAR -->
     <nav class="bg-green-700 p-4 shadow-md mb-6 text-white">
+
         <div class="container mx-auto flex justify-between items-center">
 
             <a href="index.html" class="text-xl font-bold flex items-center gap-2">
@@ -19,6 +21,7 @@
             </a>
 
             <div class="space-x-6">
+
                 <a href="index.html" class="hover:text-green-200 transition">
                     Home
                 </a>
@@ -32,19 +35,65 @@
                 </a>
 
                 <a href="painel-responsavel.html"
-                   class="font-bold border-l pl-4 border-green-500 text-green-200">
+                    class="font-bold border-l pl-4 border-green-500 text-green-200">
                     Painel ADM
                 </a>
+
             </div>
+
         </div>
+
     </nav>
 
     <!-- CONTEÚDO -->
     <div class="container mx-auto p-4">
 
+        <!-- CARDS -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+
+            <div class="bg-white rounded-2xl shadow p-6 border-l-4 border-green-600">
+
+                <p class="text-gray-500 text-sm">
+                    Animais cadastrados
+                </p>
+
+                <h2 id="totalAnimais" class="text-3xl font-bold text-gray-800">
+                    0
+                </h2>
+
+            </div>
+
+            <div class="bg-white rounded-2xl shadow p-6 border-l-4 border-blue-600">
+
+                <p class="text-gray-500 text-sm">
+                    Solicitações
+                </p>
+
+                <h2 id="totalSolicitacoes" class="text-3xl font-bold text-gray-800">
+                    0
+                </h2>
+
+            </div>
+
+            <div class="bg-white rounded-2xl shadow p-6 border-l-4 border-purple-600">
+
+                <p class="text-gray-500 text-sm">
+                    Adotantes
+                </p>
+
+                <h2 id="totalAdotantes" class="text-3xl font-bold text-gray-800">
+                    0
+                </h2>
+
+            </div>
+
+        </div>
+
+        <!-- TOPO -->
         <div class="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between mb-8">
 
             <div>
+
                 <h1 class="text-3xl font-bold text-gray-800">
                     Painel ADM
                 </h1>
@@ -52,32 +101,31 @@
                 <p class="text-gray-600">
                     Gerencie solicitações, animais e adotantes.
                 </p>
+
             </div>
 
             <div class="flex gap-2 flex-wrap">
 
                 <button
                     onclick="mostrarAba('solicitacoes')"
-                    class="rounded-full border border-green-600 bg-green-600 px-5 py-3 text-sm font-bold text-white"
-                >
+                    class="rounded-full border border-green-600 bg-green-600 px-5 py-3 text-sm font-bold text-white">
                     Solicitações
                 </button>
 
                 <button
                     onclick="mostrarAba('animais')"
-                    class="rounded-full border border-green-600 bg-white px-5 py-3 text-sm font-bold text-green-700"
-                >
+                    class="rounded-full border border-green-600 bg-white px-5 py-3 text-sm font-bold text-green-700">
                     Animais
                 </button>
 
                 <button
                     onclick="mostrarAba('adotantes')"
-                    class="rounded-full border border-green-600 bg-white px-5 py-3 text-sm font-bold text-green-700"
-                >
+                    class="rounded-full border border-green-600 bg-white px-5 py-3 text-sm font-bold text-green-700">
                     Adotantes
                 </button>
 
             </div>
+
         </div>
 
         <!-- ABA SOLICITAÇÕES -->
@@ -96,6 +144,7 @@
             </div>
 
             <div id="listaPedidos" class="space-y-4"></div>
+
         </div>
 
         <!-- ABA ANIMAIS -->
@@ -114,6 +163,7 @@
             </div>
 
             <div id="listaAnimais" class="space-y-4"></div>
+
         </div>
 
         <!-- ABA ADOTANTES -->
@@ -132,86 +182,17 @@
             </div>
 
             <div id="listaAdotantes" class="space-y-4"></div>
+
         </div>
 
     </div>
 
-    <!-- MODAL COMPROVANTE -->
-    <div
-        id="modalComprovante"
-        class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50 p-4"
-    >
-        <div class="relative w-full max-w-2xl rounded-3xl bg-white shadow-2xl p-8">
-            <button
-                onclick="fecharModalComprovante()"
-                class="absolute right-6 top-6 rounded-full bg-slate-100 px-4 py-2 text-xl font-bold"
-            >
-                ×
-            </button>
-            <div class="text-center mb-6">
-
-                <h2 class="text-3xl font-bold text-gray-800">
-                    Comprovante de Adoção
-                </h2>
-
-                <p class="text-gray-600">
-                    Imprima este recibo.
-                </p>
-            </div>
-            <div class="space-y-4">
-                <div>
-                    <strong>Adotante:</strong>
-                    <span id="comprovanteAdotante"></span>
-                </div>
-
-                <div>
-                    <strong>Animal:</strong>
-                    <span id="comprovanteAnimal"></span>
-                </div>
-
-                <div>
-                    <strong>Data:</strong>
-                    <span id="comprovanteDataVisita"></span>
-                </div>
-
-                <div>
-                    <strong>Local:</strong>
-                    <span id="comprovanteLocal"></span>
-                </div>
-
-                <div>
-                    <strong>Status:</strong>
-                    <span id="comprovanteStatus"></span>
-                </div>
-
-            </div>
-
-            <div class="mt-8 flex gap-3 justify-end">
-
-                <button
-                    onclick="fecharModalComprovante()"
-                    class="rounded-3xl border border-gray-300 bg-white px-6 py-3 font-bold"
-                >
-                    Fechar
-                </button>
-
-                <button
-                    onclick="imprimirComprovante()"
-                    class="rounded-3xl bg-green-600 px-6 py-3 font-bold text-white"
-                >
-                    Imprimir
-                </button>
-
-            </div>
-        </div>
-    </div>
-
-    <!-- SCRIPT -->
     <script>
 
         let animaisCache = [];
 
         function getAdminToken() {
+
             return localStorage.getItem('adminToken');
         }
 
@@ -220,7 +201,9 @@
             const token = getAdminToken();
 
             return {
+
                 'Content-Type': 'application/json',
+
                 Authorization: token ? `Bearer ${token}` : ''
             };
         }
@@ -230,12 +213,14 @@
             const token = getAdminToken();
 
             if (!token) {
+
                 return false;
             }
 
             try {
 
                 const response = await fetch('/admin/me', {
+
                     headers: getAdminHeaders()
                 });
 
@@ -244,6 +229,7 @@
             } catch (error) {
 
                 console.error(error);
+
                 return false;
             }
         }
@@ -252,9 +238,12 @@
 
             const isAdmin = await validarTokenAdmin();
 
-            document.querySelectorAll('.show-for-admin').forEach((elemento) => {
-                elemento.style.display = isAdmin ? '' : 'none';
-            });
+            document.querySelectorAll('.show-for-admin')
+                .forEach((elemento) => {
+
+                    elemento.style.display =
+                        isAdmin ? '' : 'none';
+                });
 
             if (!isAdmin) {
 
@@ -262,7 +251,8 @@
 
                 localStorage.removeItem('adminToken');
 
-                window.location.href = 'admin-login.html';
+                window.location.href =
+                    'admin-login.html';
             }
 
         })();
@@ -282,18 +272,21 @@
                 .classList.add('hidden');
 
             if (aba === 'solicitacoes') {
+
                 document
                     .getElementById('abaSolicitacoes')
                     .classList.remove('hidden');
             }
 
             if (aba === 'animais') {
+
                 document
                     .getElementById('abaAnimais')
                     .classList.remove('hidden');
             }
 
             if (aba === 'adotantes') {
+
                 document
                     .getElementById('abaAdotantes')
                     .classList.remove('hidden');
@@ -302,15 +295,21 @@
 
         async function carregarPedidos() {
 
-            const container = document.getElementById('listaPedidos');
+            const container =
+                document.getElementById('listaPedidos');
 
             try {
 
                 const response = await fetch('/adocoes/listar', {
+
                     headers: getAdminHeaders()
                 });
 
                 const pedidos = await response.json();
+
+                document.getElementById(
+                    'totalSolicitacoes'
+                ).innerText = pedidos.length;
 
                 if (!response.ok) {
 
@@ -337,28 +336,44 @@
                 container.innerHTML = pedidos.map((pedido) => {
 
                     return `
-                        <div class="bg-white p-6 rounded-lg shadow">
+                        <div class="bg-white p-6 rounded-2xl shadow">
 
-                            <h3 class="text-xl font-bold mb-2">
+                            <h3 class="text-2xl font-bold mb-2">
                                 ${pedido.Adotante.nome}
                             </h3>
 
-                            <p class="text-gray-600">
+                            <p class="text-gray-600 mb-2">
                                 Animal: ${pedido.Animal.nome}
                             </p>
 
-                            <div class="mt-4">
+                            <!-- DATA E HORÁRIO -->
+                            <div class="mt-4 mb-4">
+
+                                <label class="block text-sm font-bold mb-2">
+                                    Data e horário da visita
+                                </label>
+
+                                <input
+                                    type="datetime-local"
+                                    id="dataVisita-${pedido.id_adocao}"
+                                    class="w-full border border-gray-300 rounded-xl px-4 py-3"
+                                />
+
+                            </div>
+
+                            <!-- BOTÕES -->
+                            <div class="flex gap-3 flex-wrap">
 
                                 <button
-                                    onclick="decidir(${pedido.id_adocao}, 'finalizado')"
-                                    class="bg-green-600 text-white px-4 py-2 rounded-lg"
+                                    onclick="aprovarAdocao(${pedido.id_adocao})"
+                                    class="bg-green-600 hover:bg-green-700 text-white px-5 py-3 rounded-xl font-bold"
                                 >
                                     Aprovar
                                 </button>
 
                                 <button
                                     onclick="decidir(${pedido.id_adocao}, 'reprovado')"
-                                    class="bg-red-600 text-white px-4 py-2 rounded-lg ml-2"
+                                    class="bg-red-600 hover:bg-red-700 text-white px-5 py-3 rounded-xl font-bold"
                                 >
                                     Reprovar
                                 </button>
@@ -376,20 +391,74 @@
             }
         }
 
+        async function aprovarAdocao(id) {
+
+            const dataVisita = document.getElementById(
+                `dataVisita-${id}`
+            ).value;
+
+            if (!dataVisita) {
+
+                alert('Selecione a data e horário da visita.');
+
+                return;
+            }
+
+            try {
+
+                const response = await fetch(
+                    `/adocoes/decidir/${id}`,
+                    {
+
+                        method: 'PATCH',
+
+                        headers: getAdminHeaders(),
+
+                        body: JSON.stringify({
+
+                            status: 'finalizado',
+
+                            data_visita: dataVisita
+                        })
+                    }
+                );
+
+                const resultado = await response.json();
+
+                if (response.ok) {
+
+                    alert('Adoção aprovada.');
+
+                    carregarPedidos();
+
+                } else {
+
+                    alert(resultado.erro || 'Erro.');
+                }
+
+            } catch (error) {
+
+                console.error(error);
+            }
+        }
+
         async function decidir(id, status) {
 
             try {
 
-                const response = await fetch(`/adocoes/decidir/${id}`, {
+                const response = await fetch(
+                    `/adocoes/decidir/${id}`,
+                    {
 
-                    method: 'PATCH',
+                        method: 'PATCH',
 
-                    headers: getAdminHeaders(),
+                        headers: getAdminHeaders(),
 
-                    body: JSON.stringify({
-                        status
-                    })
-                });
+                        body: JSON.stringify({
+                            status
+                        })
+                    }
+                );
 
                 const resultado = await response.json();
 
@@ -412,17 +481,25 @@
 
         async function carregarAnimais() {
 
-            const container = document.getElementById('listaAnimais');
+            const container =
+                document.getElementById('listaAnimais');
 
             try {
 
-                const response = await fetch('/animais/listar/todos', {
-                    headers: getAdminHeaders()
-                });
+                const response = await fetch(
+                    '/animais/listar/todos',
+                    {
+                        headers: getAdminHeaders()
+                    }
+                );
 
                 const animais = await response.json();
 
                 animaisCache = animais;
+
+                document.getElementById(
+                    'totalAnimais'
+                ).innerText = animais.length;
 
                 container.innerHTML = animais.map((animal) => {
 
@@ -472,15 +549,23 @@
 
         async function carregarAdotantes() {
 
-            const container = document.getElementById('listaAdotantes');
+            const container =
+                document.getElementById('listaAdotantes');
 
             try {
 
-                const response = await fetch('/adotantes/listar', {
-                    headers: getAdminHeaders()
-                });
+                const response = await fetch(
+                    '/adotantes/listar',
+                    {
+                        headers: getAdminHeaders()
+                    }
+                );
 
                 const adotantes = await response.json();
+
+                document.getElementById(
+                    'totalAdotantes'
+                ).innerText = adotantes.length;
 
                 container.innerHTML = adotantes.map((adotante) => {
 
@@ -510,117 +595,6 @@
             }
         }
 
-        function mostrarComprovante(comprovante) {
-
-            document.getElementById('comprovanteAdotante').innerText =
-                comprovante.nome_adotante || '-';
-
-            document.getElementById('comprovanteAnimal').innerText =
-                comprovante.nome_animal || '-';
-
-            document.getElementById('comprovanteDataVisita').innerText =
-                comprovante.data_visita || '-';
-
-            document.getElementById('comprovanteLocal').innerText =
-                comprovante.local_visita || '-';
-
-            document.getElementById('comprovanteStatus').innerText =
-                comprovante.status || '-';
-
-            const modal = document.getElementById('modalComprovante');
-
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-        }
-
-        function fecharModalComprovante() {
-
-            const modal = document.getElementById('modalComprovante');
-
-            modal.classList.add('hidden');
-            modal.classList.remove('flex');
-        }
-
-        function imprimirComprovante() {
-
-            const adotante =
-                document.getElementById('comprovanteAdotante').innerText;
-
-            const animal =
-                document.getElementById('comprovanteAnimal').innerText;
-
-            const dataVisita =
-                document.getElementById('comprovanteDataVisita').innerText;
-
-            const local =
-                document.getElementById('comprovanteLocal').innerText;
-
-            const status =
-                document.getElementById('comprovanteStatus').innerText;
-
-            const conteudo = `
-                <!DOCTYPE html>
-
-                <html lang="pt-br">
-
-                <head>
-
-                    <meta charset="UTF-8">
-
-                    <title>Comprovante</title>
-
-                    <style>
-
-                        body {
-                            font-family: Arial;
-                            padding: 24px;
-                        }
-
-                        .box {
-                            border: 1px solid #ccc;
-                            padding: 20px;
-                            border-radius: 12px;
-                        }
-
-                    </style>
-
-                </head>
-
-                <body>
-
-                    <h1>Comprovante de Adoção</h1>
-
-                    <div class="box">
-
-                        <p><strong>Adotante:</strong> ${adotante}</p>
-
-                        <p><strong>Animal:</strong> ${animal}</p>
-
-                        <p><strong>Data:</strong> ${dataVisita}</p>
-
-                        <p><strong>Local:</strong> ${local}</p>
-
-                        <p><strong>Status:</strong> ${status}</p>
-
-                    </div>
-                    <script>
-                        window.print();
-                    <\/script>
-                </body>
-                </html>
-            `;
-
-            const printWindow = window.open('', '_blank');
-
-            if (!printWindow) {
-                return;
-            }
-
-            printWindow.document.write(conteudo);
-
-            printWindow.document.close();
-        }
-
         carregarPedidos();
         carregarAnimais();
         carregarAdotantes();
@@ -628,4 +602,5 @@
     </script>
 
 </body>
+
 </html>

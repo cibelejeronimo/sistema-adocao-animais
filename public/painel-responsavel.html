@@ -118,6 +118,12 @@
                 </button>
 
                 <button
+                    onclick="mostrarAba('relatorios')"
+                    class="rounded-full border border-green-600 bg-white px-5 py-3 text-sm font-bold text-green-700">
+                    Relatórios
+                </button>
+
+                <button
                     onclick="mostrarAba('animais')"
                     class="rounded-full border border-green-600 bg-white px-5 py-3 text-sm font-bold text-green-700">
                     Animais
@@ -187,6 +193,60 @@
             </div>
 
             <div id="listaAdotantes" class="space-y-4"></div>
+
+        </div>
+
+        <!-- ABA RELATÓRIOS -->
+        <div id="abaRelatorios" class="hidden">
+
+            <div class="text-center mb-8">
+                <h2 class="text-3xl font-bold text-gray-800">Relatórios Gerais</h2>
+                <p class="text-gray-600">Visão geral dos animais, solicitações e adotantes cadastrados.</p>
+            </div>
+
+            <div class="grid grid-cols-1 xl:grid-cols-3 gap-4 mb-8">
+                <div class="bg-white rounded-3xl p-6 shadow border-l-4 border-green-600">
+                    <p class="text-sm text-gray-500">Animais disponíveis</p>
+                    <h3 id="reportAnimaisDisponiveis" class="text-3xl font-bold text-gray-900">0</h3>
+                </div>
+                <div class="bg-white rounded-3xl p-6 shadow border-l-4 border-red-600">
+                    <p class="text-sm text-gray-500">Animais adotados</p>
+                    <h3 id="reportAnimaisAdotados" class="text-3xl font-bold text-gray-900">0</h3>
+                </div>
+                <div class="bg-white rounded-3xl p-6 shadow border-l-4 border-blue-600">
+                    <p class="text-sm text-gray-500">Solicitações pendentes</p>
+                    <h3 id="reportSolicitacoesPendentes" class="text-3xl font-bold text-gray-900">0</h3>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 xl:grid-cols-3 gap-4 mb-8">
+                <div class="bg-white rounded-3xl p-6 shadow border-l-4 border-blue-600">
+                    <p class="text-sm text-gray-500">Solicitações finalizadas</p>
+                    <h3 id="reportSolicitacoesFinalizadas" class="text-3xl font-bold text-gray-900">0</h3>
+                </div>
+                <div class="bg-white rounded-3xl p-6 shadow border-l-4 border-purple-600">
+                    <p class="text-sm text-gray-500">Adotantes ativos</p>
+                    <h3 id="reportAdotantesAtivos" class="text-3xl font-bold text-gray-900">0</h3>
+                </div>
+                <div class="bg-white rounded-3xl p-6 shadow border-l-4 border-yellow-600">
+                    <p class="text-sm text-gray-500">Adotantes inativos</p>
+                    <h3 id="reportAdotantesInativos" class="text-3xl font-bold text-gray-900">0</h3>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-3xl p-6 shadow">
+                <h3 class="text-xl font-bold text-gray-800 mb-4">Resumo rápido</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="rounded-3xl border border-gray-200 p-5 bg-slate-50">
+                        <p class="text-sm text-gray-600">Total de registros</p>
+                        <p id="reportTotalGeral" class="mt-3 text-2xl font-bold text-gray-900">0</p>
+                    </div>
+                    <div class="rounded-3xl border border-gray-200 p-5 bg-slate-50">
+                        <p class="text-sm text-gray-600">Porcentagem de adoções finalizadas</p>
+                        <p id="reportPercentualFinalizadas" class="mt-3 text-2xl font-bold text-gray-900">0%</p>
+                    </div>
+                </div>
+            </div>
 
         </div>
 
@@ -269,7 +329,9 @@
 
     <script>
 
+        let pedidosCache = [];
         let animaisCache = [];
+        let adotantesCache = [];
 
         function getAdminToken() {
 
@@ -371,6 +433,35 @@
                     .getElementById('abaAdotantes')
                     .classList.remove('hidden');
             }
+
+            if (aba === 'relatorios') {
+
+                document
+                    .getElementById('abaRelatorios')
+                    .classList.remove('hidden');
+            }
+        }
+
+        function carregarRelatorios() {
+            const animaisDisponiveis = animaisCache.filter(a => a.status === 'disponivel').length;
+            const animaisAdotados = animaisCache.filter(a => a.status === 'adotado').length;
+            const solicitacoesPendentes = pedidosCache.filter(p => p.status === 'em analise').length;
+            const solicitacoesFinalizadas = pedidosCache.filter(p => p.status === 'finalizado').length;
+            const adotantesAtivos = adotantesCache.filter(a => a.situacao === 'Ativo').length;
+            const adotantesInativos = adotantesCache.filter(a => a.situacao === 'Inativo').length;
+            const totalGeral = animaisCache.length + pedidosCache.length + adotantesCache.length;
+            const percentualFinalizadas = pedidosCache.length > 0
+                ? Math.round((solicitacoesFinalizadas / pedidosCache.length) * 100)
+                : 0;
+
+            document.getElementById('reportAnimaisDisponiveis').innerText = animaisDisponiveis;
+            document.getElementById('reportAnimaisAdotados').innerText = animaisAdotados;
+            document.getElementById('reportSolicitacoesPendentes').innerText = solicitacoesPendentes;
+            document.getElementById('reportSolicitacoesFinalizadas').innerText = solicitacoesFinalizadas;
+            document.getElementById('reportAdotantesAtivos').innerText = adotantesAtivos;
+            document.getElementById('reportAdotantesInativos').innerText = adotantesInativos;
+            document.getElementById('reportTotalGeral').innerText = totalGeral;
+            document.getElementById('reportPercentualFinalizadas').innerText = `${percentualFinalizadas}%`;
         }
 
         async function carregarPedidos() {
@@ -386,10 +477,13 @@
                 });
 
                 const pedidos = await response.json();
+                pedidosCache = pedidos;
 
                 document.getElementById(
                     'totalSolicitacoes'
                 ).innerText = pedidos.length;
+
+                carregarRelatorios();
 
                 if (!response.ok) {
 
@@ -627,6 +721,8 @@
                     'totalAnimais'
                 ).innerText = animais.length;
 
+                carregarRelatorios();
+
                 container.innerHTML = animais.map((animal) => {
 
                     const statusClasse =
@@ -795,10 +891,13 @@
                 );
 
                 const adotantes = await response.json();
+                adotantesCache = adotantes;
 
                 document.getElementById(
                     'totalAdotantes'
                 ).innerText = adotantes.length;
+
+                carregarRelatorios();
 
                 container.innerHTML = adotantes.map((adotante) => {
 

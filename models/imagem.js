@@ -11,7 +11,7 @@ const Imagem = sequelize.define('Imagem', {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
-            model: 'Animals', // Note: Sequelize pluralizes table names
+            model: 'Animals', 
             key: 'id_animal'
         }
     },

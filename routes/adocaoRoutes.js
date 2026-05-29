@@ -7,7 +7,6 @@ const Animal = require('../models/animal');
 const adminAuth = require('../middleware/adminAuth');
 console.log("Modelo carregado com sucesso!");
 
-// Rota para solicitar adoção
 router.post('/solicitar', async (req, res) => {
     try {
         const { id_adotante, id_animal } = req.body;
@@ -22,7 +21,6 @@ router.post('/solicitar', async (req, res) => {
     }
 });
 
-// Rota para listar apenas solicitações pendentes de aprovação
 router.get('/listar', adminAuth, async (req, res) => {
     try {
         const adocoes = await Adocao.findAll({

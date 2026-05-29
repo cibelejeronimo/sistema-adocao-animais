@@ -12,7 +12,7 @@
         <div class="container mx-auto flex justify-between items-center">
             <a href="index.html" class="text-xl font-bold flex items-center gap-2">🐾 Sistema Adoção de Animais</a>
             <div class="space-x-6 flex items-center">
-                <a href="vitrine.html" class="hover:text-green-200 transition">Vitrine</a>
+                <a id="linkVitrine" href="vitrine.html" class="hover:text-green-200 transition">Vitrine</a>
                 <a href="index.html" class="font-bold border-b-2 border-white pb-1">Cadastrar Adotante</a>
                 <a href="admin.html" class="hover:text-green-200 transition show-for-admin">Cadastrar Animal</a>
                 <div class="relative inline-block group">
@@ -155,12 +155,12 @@
         }
 
         function atualizarLinkVitrine() {
-            const link = document.querySelector('a[href="vitrine.html"]');
+            const link = document.getElementById('linkVitrine');
             const adotante = localStorage.getItem('adotante');
             if(!adotante) {
-                link.classList.add('opacity-60', 'pointer-events-none');
+                link.style.display = 'none';
             } else {
-                link.classList.remove('opacity-60', 'pointer-events-none');
+                link.style.display = '';
             }
         }
 

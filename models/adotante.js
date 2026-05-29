@@ -1,5 +1,5 @@
 const { DataTypes } = require('sequelize');
-const sequelize = require('../database'); // IMPORTANTE: Deve apontar para o seu database.js
+const sequelize = require('../database'); 
 
 const Adotante = sequelize.define('Adotante', {
     id_adotante: {

@@ -32,8 +32,7 @@
             document.querySelectorAll('.show-for-admin').forEach(el => el.style.display = isAdmin ? '' : 'none');
             const path = window.location.pathname.split('/').pop();
             if ((path === 'admin.html' || path === 'painel-responsavel.html') && !isAdmin) {
-                // non-admins shouldn't be here; redirect if they somehow access
-                // but don't block cadastro (adotante) page itself
+
             }
         })();
     </script>

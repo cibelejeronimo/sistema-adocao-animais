@@ -111,25 +111,25 @@
 
             <div class="flex flex-wrap items-center gap-2">
 
-                <button
+                <button id="btnSolicitacoes"
                     onclick="mostrarAba('solicitacoes')"
                     class="rounded-full border border-green-600 bg-green-600 px-5 py-3 text-sm font-bold text-white">
                     Solicitações
                 </button>
 
-                <button
+                <button id="btnRelatorios"
                     onclick="mostrarAba('relatorios')"
                     class="rounded-full border border-green-600 bg-white px-5 py-3 text-sm font-bold text-green-700">
                     Relatórios
                 </button>
 
-                <button
+                <button id="btnAnimais"
                     onclick="mostrarAba('animais')"
                     class="rounded-full border border-green-600 bg-white px-5 py-3 text-sm font-bold text-green-700">
                     Animais
                 </button>
 
-                <button
+                <button id="btnAdotantes"
                     onclick="mostrarAba('adotantes')"
                     class="rounded-full border border-green-600 bg-white px-5 py-3 text-sm font-bold text-green-700">
                     Adotantes
@@ -205,30 +205,30 @@
             </div>
 
             <div class="grid grid-cols-1 xl:grid-cols-3 gap-4 mb-8">
-                <div class="bg-white rounded-3xl p-6 shadow border-l-4 border-green-600">
+                <div onclick="mostrarDetalhes('animais_disponiveis')" class="bg-white rounded-3xl p-6 shadow border-l-4 border-green-600 cursor-pointer hover:shadow-lg">
                     <p class="text-sm text-gray-500">Animais disponíveis</p>
                     <h3 id="reportAnimaisDisponiveis" class="text-3xl font-bold text-gray-900">0</h3>
                 </div>
-                <div class="bg-white rounded-3xl p-6 shadow border-l-4 border-red-600">
+                <div onclick="mostrarDetalhes('animais_adotados')" class="bg-white rounded-3xl p-6 shadow border-l-4 border-red-600 cursor-pointer hover:shadow-lg">
                     <p class="text-sm text-gray-500">Animais adotados</p>
                     <h3 id="reportAnimaisAdotados" class="text-3xl font-bold text-gray-900">0</h3>
                 </div>
-                <div class="bg-white rounded-3xl p-6 shadow border-l-4 border-blue-600">
+                <div onclick="mostrarDetalhes('solicitacoes_pendentes')" class="bg-white rounded-3xl p-6 shadow border-l-4 border-blue-600 cursor-pointer hover:shadow-lg">
                     <p class="text-sm text-gray-500">Solicitações pendentes</p>
                     <h3 id="reportSolicitacoesPendentes" class="text-3xl font-bold text-gray-900">0</h3>
                 </div>
             </div>
 
             <div class="grid grid-cols-1 xl:grid-cols-3 gap-4 mb-8">
-                <div class="bg-white rounded-3xl p-6 shadow border-l-4 border-blue-600">
+                <div onclick="mostrarDetalhes('solicitacoes_finalizadas')" class="bg-white rounded-3xl p-6 shadow border-l-4 border-blue-600 cursor-pointer hover:shadow-lg">
                     <p class="text-sm text-gray-500">Solicitações finalizadas</p>
                     <h3 id="reportSolicitacoesFinalizadas" class="text-3xl font-bold text-gray-900">0</h3>
                 </div>
-                <div class="bg-white rounded-3xl p-6 shadow border-l-4 border-purple-600">
+                <div onclick="mostrarDetalhes('adotantes_ativos')" class="bg-white rounded-3xl p-6 shadow border-l-4 border-purple-600 cursor-pointer hover:shadow-lg">
                     <p class="text-sm text-gray-500">Adotantes ativos</p>
                     <h3 id="reportAdotantesAtivos" class="text-3xl font-bold text-gray-900">0</h3>
                 </div>
-                <div class="bg-white rounded-3xl p-6 shadow border-l-4 border-yellow-600">
+                <div onclick="mostrarDetalhes('adotantes_inativos')" class="bg-white rounded-3xl p-6 shadow border-l-4 border-yellow-600 cursor-pointer hover:shadow-lg">
                     <p class="text-sm text-gray-500">Adotantes inativos</p>
                     <h3 id="reportAdotantesInativos" class="text-3xl font-bold text-gray-900">0</h3>
                 </div>
@@ -248,7 +248,20 @@
                 </div>
             </div>
 
-        </div>
+            </div>
+
+            <!-- Modal de detalhes do relatório -->
+            <div id="modalRelatorioDetalhes" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+                <div class="w-full max-w-4xl rounded-2xl bg-white p-6 shadow-2xl">
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 id="relatorioTitulo" class="text-2xl font-bold text-gray-800">Detalhes</h2>
+                        <div class="flex gap-2">
+                            <button onclick="fecharModalRelatorio()" class="rounded-xl border border-gray-300 px-4 py-2 text-sm font-bold text-gray-700">Fechar</button>
+                        </div>
+                    </div>
+                    <div id="relatorioConteudo" class="max-h-[60vh] overflow-auto text-gray-700"></div>
+                </div>
+            </div>
 
     </div>
 
@@ -401,45 +414,40 @@
 
         function mostrarAba(aba) {
 
-            document
-                .getElementById('abaSolicitacoes')
-                .classList.add('hidden');
+            // esconder todas as abas
+            document.getElementById('abaSolicitacoes').classList.add('hidden');
+            document.getElementById('abaAnimais').classList.add('hidden');
+            document.getElementById('abaAdotantes').classList.add('hidden');
+            document.getElementById('abaRelatorios').classList.add('hidden');
 
-            document
-                .getElementById('abaAnimais')
-                .classList.add('hidden');
+            // classes
+            const resetClass = 'rounded-full border border-green-600 bg-white px-5 py-3 text-sm font-bold text-green-700';
+            const activeClass = 'rounded-full border border-green-600 bg-green-600 px-5 py-3 text-sm font-bold text-white';
 
-            document
-                .getElementById('abaAdotantes')
-                .classList.add('hidden');
+            const btnMap = {
+                solicitacoes: document.getElementById('btnSolicitacoes'),
+                relatorios: document.getElementById('btnRelatorios'),
+                animais: document.getElementById('btnAnimais'),
+                adotantes: document.getElementById('btnAdotantes')
+            };
 
+            // resetar todas as classes de botão
+            Object.values(btnMap).forEach(b => { if (b) b.className = resetClass; });
+
+            // mostrar aba selecionada
             if (aba === 'solicitacoes') {
-
-                document
-                    .getElementById('abaSolicitacoes')
-                    .classList.remove('hidden');
+                document.getElementById('abaSolicitacoes').classList.remove('hidden');
+            } else if (aba === 'animais') {
+                document.getElementById('abaAnimais').classList.remove('hidden');
+            } else if (aba === 'adotantes') {
+                document.getElementById('abaAdotantes').classList.remove('hidden');
+            } else if (aba === 'relatorios') {
+                document.getElementById('abaRelatorios').classList.remove('hidden');
             }
 
-            if (aba === 'animais') {
-
-                document
-                    .getElementById('abaAnimais')
-                    .classList.remove('hidden');
-            }
-
-            if (aba === 'adotantes') {
-
-                document
-                    .getElementById('abaAdotantes')
-                    .classList.remove('hidden');
-            }
-
-            if (aba === 'relatorios') {
-
-                document
-                    .getElementById('abaRelatorios')
-                    .classList.remove('hidden');
-            }
+            // marcar botão ativo
+            const activeBtn = btnMap[aba];
+            if (activeBtn) activeBtn.className = activeClass;
         }
 
         function carregarRelatorios() {
@@ -930,6 +938,65 @@
         carregarPedidos();
         carregarAnimais();
         carregarAdotantes();
+
+        // definir aba padrão ativa
+        mostrarAba('solicitacoes');
+
+        function fecharModalRelatorio() {
+            document.getElementById('modalRelatorioDetalhes').classList.add('hidden');
+        }
+
+        function mostrarDetalhes(tipo) {
+            let titulo = '';
+            let html = '';
+
+            if (tipo === 'animais_disponiveis') {
+                titulo = 'Animais disponíveis';
+                const lista = animaisCache.filter(a => a.status === 'disponivel');
+                if (!lista.length) html = '<p>Nenhum animal disponível.</p>';
+                else {
+                    html = `<table class="w-full table-auto border-collapse">
+                        <thead><tr class="bg-slate-100"><th class="p-2 text-left">Nome</th><th class="p-2 text-left">Idade</th><th class="p-2 text-left">Porte</th><th class="p-2 text-left">Vacinas</th><th class="p-2 text-left">Status</th></tr></thead><tbody>`;
+                    html += lista.map(a => `<tr class="border-t"><td class="p-2">${a.nome}</td><td class="p-2">${a.idade || ''}</td><td class="p-2">${a.porte || ''}</td><td class="p-2">${a.vacinas || ''}</td><td class="p-2">${a.status}</td></tr>`).join('');
+                    html += '</tbody></table>';
+                }
+            }
+
+            if (tipo === 'animais_adotados') {
+                titulo = 'Animais adotados';
+                const lista = animaisCache.filter(a => a.status === 'adotado');
+                if (!lista.length) html = '<p>Nenhum animal adotado.</p>';
+                else {
+                    html = `<ul class="space-y-2">` + lista.map(a => `<li class="p-3 bg-slate-50 rounded-lg">${a.nome} — ${a.idade || ''} — ${a.porte || ''}</li>`).join('') + '</ul>';
+                }
+            }
+
+            if (tipo === 'solicitacoes_pendentes' || tipo === 'solicitacoes_finalizadas') {
+                titulo = tipo === 'solicitacoes_pendentes' ? 'Solicitações pendentes' : 'Solicitações finalizadas';
+                const statusFiltro = tipo === 'solicitacoes_pendentes' ? 'em analise' : 'finalizado';
+                const lista = pedidosCache.filter(p => p.status === statusFiltro);
+                if (!lista.length) html = '<p>Nenhuma solicitação encontrada.</p>';
+                else {
+                    html = `<table class="w-full table-auto border-collapse"><thead><tr class="bg-slate-100"><th class="p-2 text-left">ID</th><th class="p-2 text-left">Adotante</th><th class="p-2 text-left">Animal</th><th class="p-2 text-left">Status</th><th class="p-2 text-left">Data visita</th></tr></thead><tbody>`;
+                    html += lista.map(p => `<tr class="border-t"><td class="p-2">${p.id_adocao}</td><td class="p-2">${p.Adotante?.nome || ''}</td><td class="p-2">${p.Animal?.nome || ''}</td><td class="p-2">${p.status}</td><td class="p-2">${p.data_visita ? new Date(p.data_visita).toLocaleString('pt-BR') : ''}</td></tr>`).join('');
+                    html += '</tbody></table>';
+                }
+            }
+
+            if (tipo === 'adotantes_ativos' || tipo === 'adotantes_inativos') {
+                titulo = tipo === 'adotantes_ativos' ? 'Adotantes ativos' : 'Adotantes inativos';
+                const situ = tipo === 'adotantes_ativos' ? 'Ativo' : 'Inativo';
+                const lista = adotantesCache.filter(a => a.situacao === situ);
+                if (!lista.length) html = '<p>Nenhum adotante encontrado.</p>';
+                else {
+                    html = `<ul class="space-y-2">` + lista.map(a => `<li class="p-3 bg-slate-50 rounded-lg">${a.nome} — ${a.cpf || ''} — ${a.telefone || ''} — ${a.endereco || ''}</li>`).join('') + '</ul>';
+                }
+            }
+
+            document.getElementById('relatorioTitulo').innerText = titulo;
+            document.getElementById('relatorioConteudo').innerHTML = html;
+            document.getElementById('modalRelatorioDetalhes').classList.remove('hidden');
+        }
 
     </script>
 

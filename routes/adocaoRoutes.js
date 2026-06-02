@@ -75,7 +75,7 @@ router.patch('/decidir/:id', adminAuth, async (req, res) => {
                 adotante.comprovante_id_adocao = adocao.id_adocao;
                 adotante.comprovante_nome_animal = animal?.nome || null;
                 adotante.comprovante_data_visita = adocao.data_visita;
-                adotante.comprovante_local = 'Av. Galeão 150, Cianorte PR';
+                adotante.comprovante_local = 'Casa de Passagem Canina 19 de Março - Av. Galeão 150, Cianorte PR';
                 await adotante.save();
             }
         }
@@ -93,7 +93,7 @@ router.patch('/decidir/:id', adminAuth, async (req, res) => {
                 nome_animal: adocaoCompleta.Animal?.nome,
                 data_visita: adocaoCompleta.data_visita,
                 status: adocaoCompleta.status,
-                local_visita: 'Av. Galeão 150, Cianorte PR'
+                local_visita: 'Casa de Passagem Canina 19 de Março - Av. Galeão 150, Cianorte PR'
             }
         });
     } catch (error) {
@@ -125,7 +125,7 @@ router.get('/comprovante/:id', adminAuth, async (req, res) => {
                 nome_animal: adocao.Animal?.nome,
                 data_visita: adocao.data_visita,
                 status: adocao.status,
-                local_visita: 'Av. Galeão 150, Cianorte PR'
+                local_visita: 'Casa de Passagem Canina 19 de Março - Av. Galeão 150, Cianorte PR'
             }
         });
     } catch (error) {

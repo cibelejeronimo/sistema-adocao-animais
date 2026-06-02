@@ -196,6 +196,62 @@
 
         </div>
 
+        <div id="modalDetalhesAdotante" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+            <div class="w-full max-w-2xl rounded-3xl bg-white p-6 shadow-2xl">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-2xl font-bold text-gray-800">Detalhes do Adotante</h2>
+                    <button onclick="fecharModalAdotante()" class="text-gray-500 hover:text-gray-700 text-2xl">×</button>
+                </div>
+                <div class="grid grid-cols-1 gap-4 text-gray-700">
+                    <div>
+                        <p class="text-sm text-gray-500">Nome</p>
+                        <p id="detalhesNome" class="text-lg font-semibold"></p>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <p class="text-sm text-gray-500">CPF</p>
+                            <p id="detalhesCpf" class="text-lg font-semibold"></p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Idade</p>
+                            <p id="detalhesIdade" class="text-lg font-semibold"></p>
+                        </div>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-500">Data de Nascimento</p>
+                        <p id="detalhesDataNascimento" class="text-lg font-semibold"></p>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <p class="text-sm text-gray-500">Telefone</p>
+                            <p id="detalhesTelefone" class="text-lg font-semibold"></p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Situação</p>
+                            <p id="detalhesSituacao" class="text-lg font-semibold"></p>
+                        </div>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-500">Endereço</p>
+                        <p id="detalhesEndereco" class="text-lg font-semibold"></p>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <p class="text-sm text-gray-500">Número</p>
+                            <p id="detalhesNumero" class="text-lg font-semibold"></p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Cidade</p>
+                            <p id="detalhesCidade" class="text-lg font-semibold"></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-6 flex justify-end gap-3">
+                    <button onclick="fecharModalAdotante()" class="rounded-xl border border-gray-300 px-5 py-3 text-sm font-bold text-gray-700 hover:bg-gray-100">Fechar</button>
+                </div>
+            </div>
+        </div>
+
         <!-- ABA RELATÓRIOS -->
         <div id="abaRelatorios" class="hidden">
 
@@ -655,7 +711,7 @@
             document.getElementById('compNomeAdotante').innerText = comprovante.nome_adotante || '';
             document.getElementById('compNomeAnimal').innerText = comprovante.nome_animal || '';
             document.getElementById('compDataVisita').innerText = comprovante.data_visita ? new Date(comprovante.data_visita).toLocaleString('pt-BR') : '';
-            document.getElementById('compLocal').innerText = comprovante.local_visita || 'Av. Galeão 150, Cianorte PR';
+            document.getElementById('compLocal').innerText = comprovante.local_visita || 'Casa de Passagem Canina 19 de Março - Av. Galeão 150, Cianorte PR';
             document.getElementById('compStatus').innerText = comprovante.status || '';
             document.getElementById('modalComprovante').classList.remove('hidden');
         }
@@ -958,20 +1014,27 @@
                 carregarRelatorios();
 
                 container.innerHTML = adotantes.map((adotante) => {
+                    const idade = calcularIdade(adotante.data_nascimento);
 
                     return `
-                        <div class="bg-white p-6 rounded-lg shadow">
+                        <div onclick="abrirModalAdotante(${adotante.id_adotante})" class="bg-white p-6 rounded-lg shadow cursor-pointer hover:shadow-lg hover:bg-gray-50 transition">
 
-                            <h3 class="text-xl font-bold">
-                                ${adotante.nome}
-                            </h3>
+                            <div class="flex items-center justify-between gap-4">
+                                <div>
+                                    <h3 class="text-xl font-bold">
+                                        ${adotante.nome}
+                                    </h3>
+                                    <p class="text-gray-600 mt-1">
+                                        ${adotante.endereco || 'Endereço não informado'}
+                                    </p>
+                                </div>
+                                <span class="text-sm text-gray-500">
+                                    ${idade !== 'N/A' ? idade + ' anos' : 'Idade não informada'}
+                                </span>
+                            </div>
 
-                            <p>
-                                ${adotante.endereco || ''}
-                            </p>
-
-                            <p>
-                                ${adotante.telefone || ''}
+                            <p class="text-gray-600 mt-3">
+                                ${adotante.telefone || 'Telefone não informado'}
                             </p>
 
                         </div>
@@ -983,6 +1046,43 @@
 
                 console.error(error);
             }
+        }
+
+        function calcularIdade(dataNascimento) {
+            if (!dataNascimento) return 'N/A';
+            const nascimento = new Date(dataNascimento);
+            if (Number.isNaN(nascimento.getTime())) return 'N/A';
+            const hoje = new Date();
+            let idade = hoje.getFullYear() - nascimento.getFullYear();
+            const mesAtual = hoje.getMonth();
+            const mesNascimento = nascimento.getMonth();
+            if (mesAtual < mesNascimento || (mesAtual === mesNascimento && hoje.getDate() < nascimento.getDate())) {
+                idade--;
+            }
+            return idade;
+        }
+
+        function abrirModalAdotante(idAdotante) {
+            const adotante = adotantesCache.find((item) => item.id_adotante === idAdotante);
+            if (!adotante) {
+                return alert('Adotante não encontrado.');
+            }
+
+            document.getElementById('detalhesNome').innerText = adotante.nome || 'Não informado';
+            document.getElementById('detalhesCpf').innerText = adotante.cpf || 'Não informado';
+            document.getElementById('detalhesIdade').innerText = calcularIdade(adotante.data_nascimento) === 'N/A' ? 'Não informado' : `${calcularIdade(adotante.data_nascimento)} anos`;
+            document.getElementById('detalhesDataNascimento').innerText = adotante.data_nascimento ? new Date(adotante.data_nascimento).toLocaleDateString('pt-BR') : 'Não informado';
+            document.getElementById('detalhesTelefone').innerText = adotante.telefone || 'Não informado';
+            document.getElementById('detalhesEndereco').innerText = adotante.endereco || 'Não informado';
+            document.getElementById('detalhesNumero').innerText = adotante.numero || 'Não informado';
+            document.getElementById('detalhesCidade').innerText = adotante.cidade || 'Não informado';
+            document.getElementById('detalhesSituacao').innerText = adotante.situacao || 'Não informado';
+
+            document.getElementById('modalDetalhesAdotante').classList.remove('hidden');
+        }
+
+        function fecharModalAdotante() {
+            document.getElementById('modalDetalhesAdotante').classList.add('hidden');
         }
 
         carregarPedidos();

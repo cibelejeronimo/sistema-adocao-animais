@@ -90,6 +90,7 @@ router.patch('/decidir/:id', adminAuth, async (req, res) => {
             comprovante: {
                 id_adocao: adocaoCompleta.id_adocao,
                 nome_adotante: adocaoCompleta.Adotante?.nome,
+                telefone_adotante: adocaoCompleta.Adotante?.telefone,
                 nome_animal: adocaoCompleta.Animal?.nome,
                 data_visita: adocaoCompleta.data_visita,
                 status: adocaoCompleta.status,
@@ -121,6 +122,7 @@ router.get('/comprovante/:id', adminAuth, async (req, res) => {
             comprovante: {
                 id_adocao: adocao.id_adocao,
                 nome_adotante: adocao.Adotante?.nome,
+                telefone_adotante: adocao.Adotante?.telefone,
                 email_adotante: adocao.Adotante?.email,
                 nome_animal: adocao.Animal?.nome,
                 data_visita: adocao.data_visita,

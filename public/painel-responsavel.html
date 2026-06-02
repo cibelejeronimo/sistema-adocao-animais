@@ -384,6 +384,7 @@
             <div id="conteudoComprovante" class="space-y-3 text-gray-700">
                 <p><strong>Nº Solicitação:</strong> <span id="compId"></span></p>
                 <p><strong>Nome do adotante:</strong> <span id="compNomeAdotante"></span></p>
+                <p><strong>Contato:</strong> <span id="compTelefone"></span></p>
                 <p><strong>Animal:</strong> <span id="compNomeAnimal"></span></p>
                 <p><strong>Data e horário da visita:</strong> <span id="compDataVisita"></span></p>
                 <p><strong>Local da visita:</strong> <span id="compLocal"></span></p>
@@ -709,6 +710,7 @@
         function abrirModalComprovante(comprovante) {
             document.getElementById('compId').innerText = comprovante.id_adocao || '';
             document.getElementById('compNomeAdotante').innerText = comprovante.nome_adotante || '';
+            document.getElementById('compTelefone').innerText = comprovante.telefone_adotante ? `📲 ${comprovante.telefone_adotante}` : '';
             document.getElementById('compNomeAnimal').innerText = comprovante.nome_animal || '';
             document.getElementById('compDataVisita').innerText = comprovante.data_visita ? new Date(comprovante.data_visita).toLocaleString('pt-BR') : '';
             document.getElementById('compLocal').innerText = comprovante.local_visita || 'Casa de Passagem Canina 19 de Março - Av. Galeão 150, Cianorte PR';

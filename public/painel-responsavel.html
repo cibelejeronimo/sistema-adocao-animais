@@ -484,7 +484,19 @@
                     headers: getAdminHeaders()
                 });
 
-                const pedidos = await response.json();
+                const data = await response.json();
+
+                if (!response.ok) {
+                    const mensagem = data.erro || 'Erro ao carregar pedidos.';
+                    container.innerHTML = `
+                        <div class="bg-white p-6 rounded-lg shadow">
+                            ${mensagem}
+                        </div>
+                    `;
+                    return;
+                }
+
+                const pedidos = Array.isArray(data) ? data : [];
                 pedidosCache = pedidos;
 
                 document.getElementById(
@@ -492,17 +504,6 @@
                 ).innerText = pedidos.length;
 
                 carregarRelatorios();
-
-                if (!response.ok) {
-
-                    container.innerHTML = `
-                        <div class="bg-white p-6 rounded-lg shadow">
-                            Erro ao carregar pedidos.
-                        </div>
-                    `;
-
-                    return;
-                }
 
                 if (!pedidos.length) {
 
@@ -516,21 +517,33 @@
                 }
 
                 container.innerHTML = pedidos.map((pedido) => {
+                    const nomeAdotante = pedido.Adotante?.nome || 'Adotante indisponível';
+                    const nomeAnimal = pedido.Animal?.nome || 'Animal indisponível';
+                    const statusPedido = pedido.status || 'Sem status';
 
                     return `
                         <div class="bg-white p-6 rounded-2xl shadow">
 
-                            <h3 class="text-2xl font-bold mb-2">
-                                ${pedido.Adotante.nome}
-                            </h3>
+                            <div class="flex flex-col gap-2">
+                                <div class="flex items-center justify-between">
+                                    <h3 class="text-2xl font-bold mb-2">
+                                        ${nomeAdotante}
+                                    </h3>
+                                    <span class="text-sm text-gray-500">#${pedido.id_adocao || 'N/A'}</span>
+                                </div>
 
-                            <p class="text-gray-600 mb-2">
-                                Animal: ${pedido.Animal.nome}
-                            </p>
+                                <p class="text-gray-600">
+                                    Animal: ${nomeAnimal}
+                                </p>
 
-                            <p class="text-gray-600 mb-2">
-                                Local da visita: Av. Galeão 150, Cianorte PR
-                            </p>
+                                <p class="text-gray-600">
+                                    Status: ${statusPedido}
+                                </p>
+
+                                <p class="text-gray-600">
+                                    Local da visita: Av. Galeão 150, Cianorte PR
+                                </p>
+                            </div>
 
                             <!-- DATA E HORÁRIO -->
                             <div class="mt-4 mb-4">
@@ -574,6 +587,11 @@
             } catch (error) {
 
                 console.error(error);
+                container.innerHTML = `
+                    <div class="bg-white p-6 rounded-lg shadow">
+                        Erro ao carregar pedidos. Veja o console para mais detalhes.
+                    </div>
+                `;
             }
         }
 

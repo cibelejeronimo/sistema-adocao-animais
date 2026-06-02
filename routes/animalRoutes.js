@@ -160,6 +160,33 @@ router.patch('/editar/:id', adminAuth, async (req, res) => {
     }
 });
 
+// Rota para deletar um animal e suas imagens
+router.delete('/:id', adminAuth, async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const animal = await Animal.findByPk(id);
+        if (!animal) {
+            return res.status(404).json({ erro: 'Animal não encontrado' });
+        }
+
+        const imagens = await Imagem.findAll({ where: { id_animal: id } });
+        for (const imagem of imagens) {
+            const caminhoArquivo = `public/${imagem.caminho}`;
+            if (fs.existsSync(caminhoArquivo)) {
+                fs.unlinkSync(caminhoArquivo);
+            }
+            await imagem.destroy();
+        }
+
+        await animal.destroy();
+
+        res.json({ mensagem: 'Animal deletado com sucesso' });
+    } catch (error) {
+        res.status(500).json({ erro: 'Erro ao deletar animal', detalhes: error.message });
+    }
+});
+
 // Rota para upload de múltiplas imagens de um animal
 router.post('/upload/:id', upload.array('imagens', 10), async (req, res) => {
     try {

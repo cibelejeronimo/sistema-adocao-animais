@@ -775,6 +775,13 @@
                                 </button>
 
                                 <button
+                                    onclick="deletarAnimal(${animal.id_animal})"
+                                    class="rounded-xl bg-red-600 px-4 py-2 text-sm font-bold text-white hover:bg-red-700"
+                                >
+                                    Deletar
+                                </button>
+
+                                <button
                                     onclick="alterarStatusAnimal(${animal.id_animal}, 'disponivel')"
                                     class="rounded-xl bg-green-600 px-4 py-2 text-sm font-bold text-white hover:bg-green-700"
                                 >
@@ -873,6 +880,31 @@
                     carregarAnimais();
                 } else {
                     alert(resultado.erro || 'Erro ao atualizar status.');
+                }
+            } catch (error) {
+                console.error(error);
+                alert('Erro ao conectar com o servidor.');
+            }
+        }
+
+        async function deletarAnimal(id) {
+            if (!confirm('Tem certeza que deseja deletar este animal?')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`/animais/${id}`, {
+                    method: 'DELETE',
+                    headers: getAdminHeaders()
+                });
+
+                const resultado = await response.json();
+
+                if (response.ok) {
+                    alert('Animal deletado com sucesso.');
+                    carregarAnimais();
+                } else {
+                    alert(resultado.erro || 'Erro ao deletar o animal.');
                 }
             } catch (error) {
                 console.error(error);

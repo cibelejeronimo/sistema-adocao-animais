@@ -8,7 +8,7 @@ const router = express.Router();
 const jwtSecret = process.env.JWT_SECRET || 'supersecret123';
 const tokenOptions = { expiresIn: '8h' };
 
-router.post('/register', async (req, res) => {
+router.post('/register', adminAuth, async (req, res) => {
     const { nome, email, senha } = req.body;
 
     if (!nome || !email || !senha) {
@@ -23,11 +23,9 @@ router.post('/register', async (req, res) => {
     try {
         const senha_hash = await bcrypt.hash(senha, 10);
         const admin = await Admin.create({ nome, email, senha_hash });
-        const token = jwt.sign({ id_admin: admin.id_admin }, jwtSecret, tokenOptions);
 
         res.status(201).json({
             mensagem: 'Administrador cadastrado com sucesso.',
-            token,
             admin: {
                 id_admin: admin.id_admin,
                 nome: admin.nome,
@@ -47,15 +45,24 @@ router.post('/login', async (req, res) => {
         return res.status(400).json({ erro: 'Email e senha são obrigatórios.' });
     }
 
-    try {
-        const admin = await Admin.findOne({ where: { email } });
-        if (!admin) {
-            return res.status(401).json({ erro: 'Credenciais inválidas.' });
-        }
+    // Validar apenas o email e senha de administrador específicos
+    const adminEmail = 'casadepasasagemcaninaadm@gmail.com';
+    const adminSenha = '1215caO';
 
-        const validPassword = await bcrypt.compare(senha, admin.senha_hash);
-        if (!validPassword) {
-            return res.status(401).json({ erro: 'Credenciais inválidas.' });
+    if (email !== adminEmail || senha !== adminSenha) {
+        return res.status(401).json({ erro: 'Credenciais inválidas.' });
+    }
+
+    try {
+        // Buscar ou criar o administrador no banco de dados
+        let admin = await Admin.findOne({ where: { email: adminEmail } });
+        
+        if (!admin) {
+            admin = await Admin.create({
+                nome: 'Administrador',
+                email: adminEmail,
+                senha_hash: await bcrypt.hash(adminSenha, 10)
+            });
         }
 
         const token = jwt.sign({ id_admin: admin.id_admin }, jwtSecret, tokenOptions);

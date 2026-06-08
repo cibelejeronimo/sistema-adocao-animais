@@ -16,16 +16,16 @@
 
         <div class="container mx-auto flex justify-between items-center">
 
-            <a href="index.html" class="text-xl font-bold flex items-center gap-2">
-                🐾 Sistema Adoção
-            </a>
+            <div class="flex items-center gap-2">
+                <button id="btnLogout" onclick="logoutAdmin()" class="hidden rounded-full border border-white/30 bg-white/10 px-3 py-1 text-sm font-semibold text-white hover:bg-white/20 transition">Sair</button>
+                <a href="index.html" class="text-xl font-bold flex items-center gap-2">
+                    🐾 Sistema Adoção
+                </a>
+            </div>
 
             <div class="space-x-6">
 
-                <a href="index.html" class="hover:text-green-200 transition">
-                    Vitrine
-                </a>
-
+    
                 <a href="cadastro.html" class="hover:text-green-200 transition">
                     Cadastro
                 </a>
@@ -33,6 +33,10 @@
                 <a href="admin.html" class="hover:text-green-200 transition show-for-admin">
                     Cadastrar Animal
                 </a>
+
+                <button onclick="window.location.href='admin-register.html'" class="hover:text-green-200 transition show-for-admin border-l pl-4 border-green-500">
+                    Cadastrar ADM
+                </button>
 
                 <a href="painel-responsavel.html"
                     class="font-bold border-l pl-4 border-green-500 text-green-200">
@@ -47,7 +51,6 @@
 
     <div class="container mx-auto p-4">
 
-        <!-- CARDS -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
 
             <div class="bg-white rounded-2xl shadow p-6 border-l-4 border-green-600">
@@ -88,7 +91,7 @@
 
         </div>
 
-        <!-- TOPO -->
+
         <div class="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between mb-8">
 
             <div class="flex flex-col gap-4 lg:flex-row lg:items-center">
@@ -456,6 +459,8 @@
                     elemento.style.display =
                         isAdmin ? '' : 'none';
                 });
+            const btnLogout = document.getElementById('btnLogout');
+            if (btnLogout) btnLogout.classList.toggle('hidden', !isAdmin);
 
             if (!isAdmin) {
 
@@ -996,6 +1001,13 @@
 
         function voltarPagina() {
             window.history.back();
+        }
+
+        function logoutAdmin() {
+            localStorage.removeItem('adminToken');
+            localStorage.removeItem('admin');
+            alert('Logout realizado.');
+            window.location.href = 'admin-login.html';
         }
 
         async function carregarAdotantes() {

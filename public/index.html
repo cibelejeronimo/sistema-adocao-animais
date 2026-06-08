@@ -10,18 +10,15 @@
 
     <nav class="bg-green-700 p-4 shadow-md text-white">
         <div class="container mx-auto flex justify-between items-center">
-            <a href="index.html" class="text-xl font-bold flex items-center gap-2">🐾 Sistema Adoção de Animais</a>
+            <div class="flex items-center gap-2">
+                <button id="btnLogout" onclick="logoutAdmin()" class="hidden rounded-full border border-white/30 bg-white/10 px-3 py-1 text-sm font-semibold text-white hover:bg-white/20 transition">Sair</button>
+                <a href="index.html" class="text-xl font-bold flex items-center gap-2">🐾 Sistema Adoção de Animais</a>
+            </div>
             <div class="space-x-6 flex items-center">
                 <a id="linkVitrine" href="vitrine.html" class="hover:text-green-200 transition">Vitrine</a>
                 <a href="index.html" class="font-bold border-b-2 border-white pb-1">Cadastrar Adotante</a>
                 <a href="admin.html" class="hover:text-green-200 transition show-for-admin">Cadastrar Animal</a>
-                <div class="relative inline-block group">
-                    <a href="painel-responsavel.html" class="hover:text-green-200 border-l pl-4 border-green-500">Painel ADM ▾</a>
-                    <div class="absolute right-0 mt-2 hidden group-hover:block bg-white text-gray-800 rounded shadow-lg min-w-[200px]">
-                        <a href="painel-responsavel.html" class="block px-4 py-2 hover:bg-gray-100">Entrar Painel</a>
-                        <a href="admin-register.html" class="block px-4 py-2 hover:bg-gray-100 show-for-admin">Cadastrar Administrador</a>
-                    </div>
-                </div>
+                <button onclick="abrirModalAdm()" class="hover:text-green-200 transition border-l pl-4 border-green-500">Painel ADM</button>
             </div>
         </div>
     </nav>
@@ -31,6 +28,8 @@
             const isAdmin = !!localStorage.getItem('adminToken');
             const isAdotante = !!localStorage.getItem('adotante');
             document.querySelectorAll('.show-for-admin').forEach(el => el.style.display = isAdmin ? '' : 'none');
+            const btnLogout = document.getElementById('btnLogout');
+            if (btnLogout) btnLogout.classList.toggle('hidden', !isAdmin);
 
             // Protect admin pages
             const adminPages = ['admin.html','painel-responsavel.html'];
@@ -40,6 +39,11 @@
                 window.location.href = 'admin-login.html';
             }
         })();
+        function logoutAdmin() {
+            localStorage.removeItem('adminToken');
+            localStorage.removeItem('admin');
+            window.location.href = 'admin-login.html';
+        }
     </script>
 
     <!-- Hero / Janela inicial -->
@@ -55,7 +59,6 @@
             </p>
             <div class="flex gap-3 mt-8">
                 <button onclick="abrirModalCadastro()" class="rounded-3xl bg-green-600 px-6 py-3 text-lg font-bold text-white shadow-lg transition hover:bg-green-700">Cadastrar como Adotante</button>
-                <button onclick="abrirModalAdm()" class="rounded-3xl bg-white/10 border border-white px-6 py-3 text-lg font-semibold text-white hover:bg-white/20 transition">Painel ADM</button>
             </div>
             <div class="w-32 h-1.5 bg-green-500 mt-8 rounded-full shadow-lg"></div>
         </div>
@@ -208,50 +211,52 @@
             }
         });
 
-            
-            function abrirModalAdm(){
-                const modal = document.getElementById('modalAdm');
-                modal.classList.remove('hidden');
-                modal.classList.add('flex');
-            }
-            function fecharModalAdm(){
-                const modal = document.getElementById('modalAdm');
-                modal.classList.add('hidden');
-                modal.classList.remove('flex');
-            }
+        function abrirModalAdm(){
+            const modal = document.getElementById('modalAdm');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+        
+        function fecharModalAdm(){
+            const modal = document.getElementById('modalAdm');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
 
-            document.getElementById('formAdminLogin').addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const email = document.getElementById('adminEmail').value;
-                const senha = document.getElementById('adminSenha').value;
+        document.getElementById('formAdminLogin').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('adminEmail').value;
+            const senha = document.getElementById('adminSenha').value;
 
-                try {
-                    const response = await fetch('/admin/login', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ email, senha })
-                    });
+            try {
+                const response = await fetch('/admin/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, senha })
+                });
 
-                    const resultado = await response.json();
-                    const msg = document.getElementById('mensagemAdm');
-                    msg.innerText = resultado.mensagem || resultado.erro;
+                const resultado = await response.json();
+                const msg = document.getElementById('mensagemAdm');
+                msg.innerText = resultado.mensagem || resultado.erro;
 
-                    if (response.ok) {
-                       
-                        if (resultado.token) localStorage.setItem('adminToken', resultado.token);
-                        if (resultado.admin) localStorage.setItem('admin', JSON.stringify(resultado.admin));
-                        msg.classList.remove('text-red-600');
-                        msg.classList.add('text-green-700');
-                        fecharModalAdm();
-                        window.location.href = 'painel-responsavel.html';
-                    } else {
-                        msg.classList.remove('text-green-700');
-                        msg.classList.add('text-red-600');
-                    }
-                } catch (err) {
-                    console.error('Erro no login admin:', err);
+                if (response.ok) {
+                    if (resultado.token) localStorage.setItem('adminToken', resultado.token);
+                    if (resultado.admin) localStorage.setItem('admin', JSON.stringify(resultado.admin));
+                    msg.classList.remove('text-red-600');
+                    msg.classList.add('text-green-700');
+                    fecharModalAdm();
+                    window.location.href = 'painel-responsavel.html';
+                } else {
+                    msg.classList.remove('text-green-700');
+                    msg.classList.add('text-red-600');
                 }
-            });
+            } catch (err) {
+                console.error('Erro no login admin:', err);
+            }
+        });
+
+            
+
     </script>
 </body>
 </html>

@@ -9,7 +9,10 @@
 <body class="bg-gray-100 min-h-screen">
     <nav class="bg-green-700 p-4 shadow-md mb-10 text-white">
         <div class="container mx-auto flex justify-between items-center">
-            <a href="index.html" class="text-xl font-bold flex items-center gap-2">🐾 Sistema Adoção</a>
+            <div class="flex items-center gap-2">
+                <button id="btnLogout" onclick="logoutAdmin()" class="hidden rounded-full border border-white/30 bg-white/10 px-3 py-1 text-sm font-semibold text-white hover:bg-white/20 transition">Sair</button>
+                <a href="index.html" class="text-xl font-bold flex items-center gap-2">🐾 Sistema Adoção</a>
+            </div>
             <div class="space-x-6">
                 <a href="admin-login.html" class="font-bold border-b-2 border-white pb-1">Login Admin</a>
                 <a href="admin-register.html" class="hover:text-green-200 transition">Cadastrar Admin</a>
@@ -74,6 +77,17 @@
                 console.error(error);
             }
         });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const btnLogout = document.getElementById('btnLogout');
+            if (btnLogout) btnLogout.classList.add('hidden');
+        });
+
+        function logoutAdmin() {
+            localStorage.removeItem('adminToken');
+            localStorage.removeItem('admin');
+            window.location.href = 'admin-login.html';
+        }
     </script>
 </body>
 </html>

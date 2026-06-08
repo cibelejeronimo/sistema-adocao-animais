@@ -10,7 +10,10 @@
 
     <nav class="bg-green-700 p-4 shadow-md text-white">
         <div class="container mx-auto flex justify-between items-center">
-            <a href="index.html" class="text-xl font-bold flex items-center gap-2">🐾 Sistema Adoção de Animais</a>
+            <div class="flex items-center gap-2">
+                <button id="btnLogout" onclick="logoutAdmin()" class="hidden rounded-full border border-white/30 bg-white/10 px-3 py-1 text-sm font-semibold text-white hover:bg-white/20 transition">Sair</button>
+                <a href="index.html" class="text-xl font-bold flex items-center gap-2">🐾 Sistema Adoção de Animais</a>
+            </div>
             <div class="space-x-6 flex items-center">
                 <a href="vitrine.html" class="font-bold border-b-2 border-white pb-1">Vitrine</a>
                 <a href="index.html" class="hover:text-green-200 transition">Cadastrar Adotante</a>
@@ -38,7 +41,14 @@
                 alert('Acesso restrito: apenas administradores podem acessar esta página.');
                 window.location.href = 'admin-login.html';
             }
+            const btnLogout = document.getElementById('btnLogout');
+            if (btnLogout) btnLogout.classList.toggle('hidden', !isAdmin);
         })();
+        function logoutAdmin() {
+            localStorage.removeItem('adminToken');
+            localStorage.removeItem('admin');
+            window.location.href = 'admin-login.html';
+        }
     </script>
 
     <div class="relative h-[450px] flex items-center justify-center bg-cover bg-center" 

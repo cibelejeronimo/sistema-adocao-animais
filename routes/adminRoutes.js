@@ -46,7 +46,7 @@ router.post('/login', async (req, res) => {
     }
 
     // Validar apenas o email e senha de administrador específicos
-    const adminEmail = 'casadepasasagemcaninaadm@gmail.com';
+    const adminEmail = 'casadepassagemcaninaadm@gmail.com';
     const adminSenha = '1215caO';
 
     if (email !== adminEmail || senha !== adminSenha) {

@@ -11,7 +11,7 @@
     <nav class="bg-green-700 p-4 shadow-md mb-10 text-white">
         <div class="container mx-auto flex justify-between items-center">
             <div class="flex items-center gap-2">
-                <button id="btnLogout" onclick="logoutAdmin()" class="hidden rounded-full border border-white/30 bg-white/10 px-3 py-1 text-sm font-semibold text-white hover:bg-white/20 transition">Sair</button>
+                <button id="btnLogout" onclick="logoutAdmin()" class="rounded-full border border-white/30 bg-white/10 px-3 py-1 text-sm font-semibold text-white hover:bg-white/20 transition disabled:opacity-50 disabled:cursor-not-allowed">Sair</button>
                 <a href="index.html" class="text-xl font-bold flex items-center gap-2">🐾 Sistema Adoção</a>
             </div>
             <div class="space-x-6">
@@ -35,7 +35,11 @@
             document.querySelectorAll('.show-for-admin').forEach(el => el.style.display = isAdmin ? '' : 'none');
             const path = window.location.pathname.split('/').pop();
             const btnLogout = document.getElementById('btnLogout');
-            if (btnLogout) btnLogout.classList.toggle('hidden', !isAdmin);
+            if (btnLogout) {
+                btnLogout.disabled = !isAdmin;
+                btnLogout.classList.toggle('opacity-50', !isAdmin);
+                btnLogout.classList.toggle('cursor-not-allowed', !isAdmin);
+            }
             if ((path === 'admin.html' || path === 'painel-responsavel.html') && !isAdmin) {
 
             }

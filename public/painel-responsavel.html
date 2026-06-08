@@ -17,7 +17,7 @@
         <div class="container mx-auto flex justify-between items-center">
 
             <div class="flex items-center gap-2">
-                <button id="btnLogout" onclick="logoutAdmin()" class="hidden rounded-full border border-white/30 bg-white/10 px-3 py-1 text-sm font-semibold text-white hover:bg-white/20 transition">Sair</button>
+                <button id="btnLogout" onclick="logoutAdmin()" class="rounded-full border border-white/30 bg-white/10 px-3 py-1 text-sm font-semibold text-white hover:bg-white/20 transition disabled:opacity-50 disabled:cursor-not-allowed">Sair</button>
                 <a href="index.html" class="text-xl font-bold flex items-center gap-2">
                     🐾 Sistema Adoção
                 </a>
@@ -27,7 +27,7 @@
 
     
                 <a href="cadastro.html" class="hover:text-green-200 transition">
-                    Cadastro
+                    Cadastrar Adotante
                 </a>
 
                 <a href="admin.html" class="hover:text-green-200 transition show-for-admin">
@@ -460,7 +460,11 @@
                         isAdmin ? '' : 'none';
                 });
             const btnLogout = document.getElementById('btnLogout');
-            if (btnLogout) btnLogout.classList.toggle('hidden', !isAdmin);
+            if (btnLogout) {
+                btnLogout.disabled = !isAdmin;
+                btnLogout.classList.toggle('opacity-50', !isAdmin);
+                btnLogout.classList.toggle('cursor-not-allowed', !isAdmin);
+            }
 
             if (!isAdmin) {
 

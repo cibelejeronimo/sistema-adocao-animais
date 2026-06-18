@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vitrine de Adoção</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 min-h-screen font-sans text-gray-800">
+
+    <nav class="bg-green-700 p-4 shadow-sm text-white sticky top-0 z-40">
+        <div class="container mx-auto flex justify-between items-center">
+            <a href="vitrine.html" class="text-xl font-bold tracking-tight uppercase">Vitrine de Adoção</a>
+            
+            <div class="relative py-2" id="menuPerfilContainer">
+                <button onclick="toggleMenuPerfil()" class="hover:text-green-100 transition font-semibold text-sm focus:outline-none uppercase tracking-wide">Meu Perfil ▾</button>
+                <div id="dropdownPerfil" class="absolute right-0 top-full mt-2 hidden bg-white text-gray-800 rounded shadow-lg min-w-[160px] border border-gray-200 z-50">
+                    <button onclick="abrirMeuPerfil()" class="block w-full text-left px-4 py-3 hover:bg-gray-50 transition text-sm border-b font-medium">Ver / Editar Dados</button>
+                    <button onclick="sair()" class="block w-full text-left px-4 py-3 hover:bg-red-50 hover:text-red-600 transition text-sm font-medium">Sair do Sistema</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="relative h-[300px] flex items-center justify-center bg-cover bg-center" style="background-image: url('fundo.jpg');"> 
+        <div class="absolute inset-0 bg-gray-900/60"></div>
+        <div class="relative z-10 w-full max-w-2xl text-center px-4">
+            <h1 class="text-3xl md:text-4xl font-bold text-white leading-tight mb-3">Encontre seu novo melhor amigo</h1>
+            <p class="text-base text-gray-200 font-light">Conectando animais resgatados a lares e processos de adoção responsáveis.</p>
+        </div>
+    </div>
+
+    <main class="container mx-auto my-12 px-4 max-w-7xl">
+        <div id="listaAnimais" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
+            <p class="text-center text-gray-500 col-span-full py-12 text-sm italic">Carregando catálogo de animais...</p>
+        </div>
+    </main>
+
+    <div id="modalDetalhes" class="hidden fixed inset-0 z-50 overflow-auto bg-black/60 p-4 justify-center items-center">
+        <div class="bg-white rounded shadow-xl w-full max-w-5xl max-h-[90vh] overflow-hidden grid grid-cols-1 lg:grid-cols-2 relative">
+            <button onclick="fecharModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-800 z-10 text-2xl font-bold px-2 bg-white rounded shadow-sm">×</button>
+            <div class="bg-gray-50 p-6 border-r border-gray-200 flex flex-col gap-4">
+                <div class="rounded overflow-hidden aspect-video border border-gray-200 bg-white cursor-zoom-in group" onclick="abrirLightbox(document.getElementById('modalImagemPrincipal').src)">
+                    <img id="modalImagemPrincipal" src="" class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105">
+                </div>
+                <div class="overflow-x-auto">
+                    <div id="modalGaleria" class="flex gap-3 pb-2"></div>
+                </div>
+            </div>
+            <div class="p-8 flex flex-col justify-between overflow-y-auto">
+                <div>
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 id="modalNome" class="text-2xl font-bold text-green-800">Nome</h2>
+                        <span id="modalStatus" class="bg-green-100 text-green-800 text-xs font-bold px-3 py-1 rounded uppercase tracking-wide">DISPONÍVEL</span>
+                    </div>
+                    <p id="modalDescricao" class="text-gray-600 text-sm mb-6 leading-relaxed"></p>
+                    <div class="grid grid-cols-2 gap-4 bg-gray-50 p-4 rounded border border-gray-100 text-xs text-gray-700">
+                        <p><span class="font-semibold text-gray-900 block mb-0.5">Idade</span><span id="modalIdade"></span></p>
+                        <p><span class="font-semibold text-gray-900 block mb-0.5">Porte</span><span id="modalPorte"></span></p>
+                        <p><span class="font-semibold text-gray-900 block mb-0.5">Vacinas</span><span id="modalVacinas"></span></p>
+                        <p><span class="font-semibold text-gray-900 block mb-0.5">Temperamento</span><span id="modalTemperamento"></span></p>
+                    </div>
+                </div>
+                <div class="mt-6">
+                    <button id="modalAdotarBtn" onclick="solicitarAdocaoModal()" class="w-full rounded bg-green-700 py-2.5 text-base font-bold text-white transition hover:bg-green-800">Solicitar Adoção</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="lightboxModal" class="hidden fixed inset-0 z-[60] bg-black/90 p-4 justify-center items-center cursor-pointer" onclick="fecharLightbox()">
+        <button onclick="fecharLightbox()" class="absolute top-5 right-5 text-white/70 hover:text-white z-50 text-4xl font-bold">×</button>
+        <img id="lightboxImagem" src="" class="max-w-full max-h-[90vh] rounded shadow-2xl object-contain">
+    </div>
+
+    <div id="modalMeuPerfil" class="hidden fixed inset-0 z-50 flex justify-end bg-black/50">
+        <div class="bg-gray-50 w-full max-w-2xl h-full shadow-2xl overflow-y-auto">
+            <div class="sticky top-0 bg-green-700 text-white px-6 py-4 flex items-center justify-between z-10 shadow">
+                <h2 class="text-lg font-bold tracking-wide uppercase">Meu Perfil de Adotante</h2>
+                <button onclick="fecharMeuPerfil()" class="text-green-100 hover:text-white text-2xl font-bold px-2">×</button>
+            </div>
+            
+            <div class="p-6 space-y-6">
+                <div class="bg-white p-5 rounded shadow-sm border border-gray-200">
+                    <h3 class="text-xs font-bold text-gray-700 mb-4 border-b border-gray-100 pb-2 uppercase tracking-wide">Meus Dados Cadastrais</h3>
+                    <form id="formEditarPerfil" class="space-y-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <label class="block md:col-span-2">
+                                <span class="text-gray-600 text-xs font-semibold uppercase">Nome Completo *</span>
+                                <input type="text" id="editNome" class="mt-1 w-full border border-gray-300 rounded p-2 text-sm focus:border-green-600 outline-none" required>
+                            </label>
+                            <label class="block">
+                                <span class="text-gray-400 text-xs font-semibold uppercase">CPF (Bloqueado)</span>
+                                <input type="text" id="editCpf" class="mt-1 w-full border border-gray-200 bg-gray-100 text-gray-500 rounded p-2 text-sm outline-none cursor-not-allowed" disabled>
+                            </label>
+                            <label class="block">
+                                <span class="text-gray-400 text-xs font-semibold uppercase">E-mail (Bloqueado)</span>
+                                <input type="text" id="editEmail" class="mt-1 w-full border border-gray-200 bg-gray-100 text-gray-500 rounded p-2 text-sm outline-none cursor-not-allowed" disabled>
+                            </label>
+                            <label class="block">
+                                <span class="text-gray-600 text-xs font-semibold uppercase">Data de Nascimento *</span>
+                                <input type="date" id="editNasc" class="mt-1 w-full border border-gray-300 rounded p-2 text-sm focus:border-green-600 outline-none" required>
+                            </label>
+                            <label class="block">
+                                <span class="text-gray-600 text-xs font-semibold uppercase">Telefone / Contato *</span>
+                                <input type="text" id="editTelefone" class="mt-1 w-full border border-gray-300 rounded p-2 text-sm focus:border-green-600 outline-none" required>
+                            </label>
+                            <label class="block md:col-span-2">
+                                <span class="text-gray-600 text-xs font-semibold uppercase">Endereço (Rua / Logradouro) *</span>
+                                <input type="text" id="editEndereco" class="mt-1 w-full border border-gray-300 rounded p-2 text-sm focus:border-green-600 outline-none" required>
+                            </label>
+                            <label class="block">
+                                <span class="text-gray-600 text-xs font-semibold uppercase">Número *</span>
+                                <input type="text" id="editNumero" class="mt-1 w-full border border-gray-300 rounded p-2 text-sm focus:border-green-600 outline-none" required>
+                            </label>
+                            <label class="block">
+                                <span class="text-gray-600 text-xs font-semibold uppercase">Bairro *</span>
+                                <input type="text" id="editBairro" class="mt-1 w-full border border-gray-300 rounded p-2 text-sm focus:border-green-600 outline-none" required>
+                            </label>
+                            <label class="block">
+                                <span class="text-gray-600 text-xs font-semibold uppercase">Cidade *</span>
+                                <input type="text" id="editCidade" class="mt-1 w-full border border-gray-300 rounded p-2 text-sm focus:border-green-600 outline-none" required>
+                            </label>
+                            <label class="block">
+                                <span class="text-gray-600 text-xs font-semibold uppercase">Estado (UF) *</span>
+                                <input type="text" id="editEstado" maxlength="2" class="mt-1 w-full border border-gray-300 rounded p-2 text-sm focus:border-green-600 outline-none uppercase" required>
+                            </label>
+                        </div>
+
+                        <div class="mt-6 pt-4 border-t border-gray-100 space-y-4">
+                            <h4 class="text-xs font-bold text-gray-700 uppercase tracking-wide">Alteração de Senha de Acesso</h4>
+                            
+                            <div class="relative">
+                                <span class="text-gray-600 text-xs font-semibold uppercase">Senha Atual para Confirmação</span>
+                                <input type="password" id="editSenhaAtual" placeholder="Digite sua senha atual" class="mt-1 w-full border border-gray-300 rounded p-2 pr-16 text-sm focus:border-green-600 outline-none">
+                                <button type="button" onclick="toggleVisibilidadeSenha('editSenhaAtual', 'txtEyeAtual')" class="absolute right-3 top-8 text-green-700 text-xs font-bold focus:outline-none"><span id="txtEyeAtual">Mostrar</span></button>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="relative">
+                                    <span class="text-gray-600 text-xs font-semibold uppercase">Nova Senha (Mín. 6 dgt)</span>
+                                    <input type="password" id="editNovaSenha" minlength="6" placeholder="Nova senha" class="mt-1 w-full border border-gray-300 rounded p-2 pr-16 text-sm focus:border-green-600 outline-none">
+                                    <button type="button" onclick="toggleVisibilidadeSenha('editNovaSenha', 'txtEyeNova')" class="absolute right-3 top-8 text-green-700 text-xs font-bold focus:outline-none"><span id="txtEyeNova">Mostrar</span></button>
+                                </div>
+                                <div class="relative">
+                                    <span class="text-gray-600 text-xs font-semibold uppercase">Confirmar Nova Senha</span>
+                                    <input type="password" id="editConfirmaSenha" minlength="6" placeholder="Repita a nova senha" class="mt-1 w-full border border-gray-300 rounded p-2 pr-16 text-sm focus:border-green-600 outline-none">
+                                    <button type="button" onclick="toggleVisibilidadeSenha('editConfirmaSenha', 'txtEyeConfirma')" class="absolute right-3 top-8 text-green-700 text-xs font-bold focus:outline-none"><span id="txtEyeConfirma">Mostrar</span></button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="pt-4 text-right">
+                            <button type="submit" class="bg-green-700 text-white font-bold py-2 px-5 rounded text-sm hover:bg-green-800 transition">Salvar Alterações</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="bg-white p-5 rounded shadow-sm border border-gray-200">
+                    <h3 class="text-xs font-bold text-gray-700 mb-4 border-b border-gray-100 pb-2 uppercase tracking-wide">Meu Histórico de Solicitações</h3>
+                    <div id="historicoAdocoesPerfil" class="space-y-3">
+                        <p class="text-center text-gray-400 py-4 text-xs italic">Nenhum registro encontrado.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="modalComprovanteAdotante" class="hidden fixed inset-0 z-[70] flex items-center justify-center bg-black/60 p-4">
+        <div class="w-full max-w-xl rounded bg-white p-6 shadow-2xl">
+            <div class="flex items-center justify-between mb-4 border-b pb-3">
+                <h2 class="text-base font-bold text-gray-800 uppercase tracking-wide">Comprovante Eletrônico</h2>
+                <button onclick="fecharModalComprovanteAdotante()" class="text-gray-400 hover:text-red-600 text-2xl font-bold px-2">×</button>
+            </div>
+            <div id="conteudoComprovantePrint" class="space-y-2 text-gray-700 text-xs bg-gray-50 p-5 rounded border border-gray-200">
+                <p><strong>Nº Protocolo:</strong> <span id="compIdAdotante"></span></p>
+                <p><strong>Requerente:</strong> <span id="compNomeAdotante"></span></p>
+                <p><strong>Animal Vinculado:</strong> <span id="compNomeAnimal"></span></p>
+                <p><strong>Data da Visita Agendada:</strong> <span id="compDataVisita"></span></p>
+                <p><strong>Local de Encontro:</strong> <span id="compLocal"></span></p>
+                <p class="pt-2 border-t border-gray-200 mt-2"><strong>Status da Solicitação:</strong> <span id="compStatus" class="font-bold uppercase"></span></p>
+            </div>
+            <div class="mt-6 flex justify-end gap-2">
+                <button onclick="fecharModalComprovanteAdotante()" class="border border-gray-300 text-gray-600 px-4 py-2 rounded text-xs font-semibold hover:bg-gray-50">Fechar</button>
+                <button onclick="imprimirComprovante()" class="bg-green-700 text-white px-4 py-2 rounded text-xs font-bold hover:bg-green-800">Gerar PDF / Imprimir</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let animaisCache = []; 
+        let animalModalAtual = null;
+
+        // Recupera e garante a sessão local ativa
+        // Recupera e garante a sessão local ativa de forma blindada
+        let adotanteData = localStorage.getItem('adotante');
+        let adotante = null;
+
+        try {
+            // Se não tiver dado ou for a string "undefined" gerada por erro de cache antigo
+            if (!adotanteData || adotanteData === 'undefined') {
+                throw new Error("Sessão inválida");
+            }
+            adotante = JSON.parse(adotanteData);
+        } catch (e) {
+            // Limpa o lixo do cache e redireciona para login limpo
+            localStorage.removeItem('adotante');
+            window.location.replace('login.html');
+        }
+
+        function toggleMenuPerfil() { document.getElementById('dropdownPerfil').classList.toggle('hidden'); }
+        document.addEventListener('click', e => {
+            const container = document.getElementById('menuPerfilContainer');
+            if (container && !container.contains(e.target)) document.getElementById('dropdownPerfil').classList.add('hidden');
+        });
+
+        function sair() {
+            localStorage.removeItem('adotante');
+            window.location.replace('index.html');
+        }
+
+        function toggleVisibilidadeSenha(inputId, textId) {
+            const input = document.getElementById(inputId);
+            const text = document.getElementById(textId);
+            if (input.type === 'password') {
+                input.type = 'text'; text.innerText = 'Ocultar';
+            } else {
+                input.type = 'password'; text.innerText = 'Mostrar';
+            }
+        }
+
+        // CARREGAR DADOS NO FORMULÁRIO DE EDIÇÃO DO ADOTANTE
+        function abrirMeuPerfil() {
+            document.getElementById('dropdownPerfil').classList.add('hidden');
+            
+            document.getElementById('editNome').value = adotante.nome || '';
+            document.getElementById('editCpf').value = adotante.cpf || '';
+            document.getElementById('editEmail').value = adotante.email || '';
+            document.getElementById('editNasc').value = adotante.data_nascimento || '';
+            document.getElementById('editTelefone').value = adotante.telefone || '';
+            document.getElementById('editEndereco').value = adotante.endereco || '';
+            document.getElementById('editBairro').value = adotante.bairro || '';
+            document.getElementById('editCidade').value = adotante.cidade || ''; // <--- NOVO
+            document.getElementById('editEstado').value = adotante.estado || ''; // <--- NOVO
+            document.getElementById('editNumero').value = adotante.numero || '';
+            
+            // Limpa caixas de senha por segurança
+            document.getElementById('editSenhaAtual').value = '';
+            document.getElementById('editNovaSenha').value = '';
+            document.getElementById('editConfirmaSenha').value = '';
+            
+            carregarHistoricoPerfil();
+            document.getElementById('modalMeuPerfil').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function fecharMeuPerfil() {
+            document.getElementById('modalMeuPerfil').classList.add('hidden');
+            document.body.style.overflow = '';
+        }
+
+        // SALVAR ALTERAÇÕES DE CADASTRO E TROCA DE SENHA
+        document.getElementById('formEditarPerfil').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = adotante.id_adotante || adotante.id;
+            
+            const novaSenha = document.getElementById('editNovaSenha').value;
+            const confirmaSenha = document.getElementById('editConfirmaSenha').value;
+            const senhaAtual = document.getElementById('editSenhaAtual').value;
+
+            // Validações de segurança para troca de senha
+            if(novaSenha || confirmaSenha || senhaAtual) {
+                if(!senhaAtual) return alert('É necessário preencher sua Senha Atual para autorizar modificações de segurança.');
+                if(novaSenha !== confirmaSenha) return alert('A Nova Senha e a Confirmação de senha digitadas não coincidem.');
+                if(novaSenha.length < 6) return alert('A nova senha deve possuir no mínimo 6 caracteres.');
+            }
+
+            const dados = {
+                nome: document.getElementById('editNome').value,
+                data_nascimento: document.getElementById('editNasc').value,
+                telefone: document.getElementById('editTelefone').value,
+                endereco: document.getElementById('editEndereco').value,
+                numero: document.getElementById('editNumero').value,
+                bairro: document.getElementById('editBairro').value,
+                cidade: document.getElementById('editCidade').value, // <--- NOVO
+                estado: document.getElementById('editEstado').value,
+                senhaAtual: senhaAtual || undefined,
+                senha: novaSenha || undefined // Envia para o backend processar
+            };
+
+            try {
+                // Rota unificada de edição do adotante que criamos no backend
+                const res = await fetch(`/adotantes/editar/${id}`, {
+                    method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(dados)
+                });
+                const resultado = await res.json();
+                
+                if (res.ok) {
+                    alert('Perfil atualizado com sucesso!');
+                    adotante = { ...adotante, ...resultado.adotante };
+                    localStorage.setItem('adotante', JSON.stringify(adotante));
+                    abrirMeuPerfil(); // Recarrega os campos com os dados limpos
+                } else {
+                    alert('Erro: ' + (resultado.erro || 'Falha ao processar requisição.'));
+                }
+            } catch (err) { alert('Erro de comunicação com o servidor.'); }
+        });
+
+        // HISTÓRICO DE PETS DO ADOTANTE
+        async function carregarHistoricoPerfil() {
+            const container = document.getElementById('historicoAdocoesPerfil');
+            const idAdotante = adotante.id_adotante || adotante.id;
+            
+            try {
+                const response = await fetch(`/adocoes/adotante/${idAdotante}`);
+                const historico = await response.json();
+                
+                if (!historico || !historico.length) {
+                    container.innerHTML = '<p class="text-center text-gray-400 py-4 text-xs italic">Nenhuma solicitação realizada até o momento.</p>';
+                    return;
+                }
+                
+                container.innerHTML = historico.map(h => {
+                    let statusTxt = 'EM ANÁLISE'; 
+                    let colorClass = 'text-yellow-700 bg-yellow-50 border-yellow-200';
+                    let btnComp = '';
+                    
+                    if (h.status === 'aguardando_confirmacao') { 
+                        statusTxt = 'VISITA AGENDADA'; colorClass = 'text-blue-700 bg-blue-50 border-blue-200';
+                        btnComp = `<button onclick="verComprovante(${h.id_adocao})" class="mt-2 text-xs font-bold text-blue-700 underline block">Visualizar Comprovante</button>`;
+                    }
+                    if (h.status === 'adotado') { 
+                        statusTxt = 'CONCLUÍDO'; colorClass = 'text-green-700 bg-green-50 border-green-200';
+                        btnComp = `<button onclick="verComprovante(${h.id_adocao})" class="mt-2 text-xs font-bold text-green-700 underline block">Visualizar Certificado</button>`;
+                    }
+                    if (h.status === 'reprovado') { 
+                        statusTxt = 'CANCELADO'; colorClass = 'text-red-700 bg-red-50 border-red-200'; 
+                    }
+
+                    return `
+                        <div class="border border-gray-200 p-4 rounded bg-white text-xs">
+                            <div class="flex justify-between items-start gap-2">
+                                <div>
+                                    <h4 class="font-bold text-gray-800 text-sm">${h.Animal?.nome || 'Animal'}</h4>
+                                    <p class="text-gray-500 mt-0.5">Protocolo: #${h.id_adocao}</p>
+                                </div>
+                                <span class="text-[10px] font-bold px-2 py-0.5 rounded border ${colorClass}">${statusTxt}</span>
+                            </div>
+                            ${btnComp}
+                        </div>`;
+                }).join('');
+            } catch (err) { container.innerHTML = '<p class="text-red-600 text-xs">Falha ao buscar histórico.</p>'; }
+        }
+
+        async function verComprovante(id) {
+            try {
+                const response = await fetch(`/adocoes/comprovante/${id}`);
+                const data = await response.json();
+                if (response.ok) {
+                    const comp = data.comprovante;
+                    document.getElementById('compIdAdotante').innerText = comp.id_adocao;
+                    document.getElementById('compNomeAdotante').innerText = comp.nome_adotante;
+                    document.getElementById('compNomeAnimal').innerText = comp.nome_animal;
+                    document.getElementById('compDataVisita').innerText = new Date(comp.data_visita).toLocaleString('pt-BR');
+                    document.getElementById('compLocal').innerText = comp.local_visita || 'Sede da ONG';
+                    document.getElementById('compStatus').innerText = comp.status === 'adotado' ? 'FINALIZADO' : 'AGUARDANDO';
+                    document.getElementById('modalComprovanteAdotante').classList.remove('hidden');
+                }
+            } catch (err) {}
+        }
+        function fecharModalComprovanteAdotante() { document.getElementById('modalComprovanteAdotante').classList.add('hidden'); }
+        function imprimirComprovante() {
+            const conteudo = document.getElementById('conteudoComprovantePrint').innerHTML;
+            const janela = window.open('', '_blank');
+            janela.document.write(`<html><head><title>Comprovante</title><style>body{font-family:sans-serif;padding:20px;font-size:14px}p{margin:6px 0;}</style></head><body><h2 style="margin-bottom:20px">Documento de Adoção</h2>${conteudo}</body></html>`);
+            janela.document.close(); janela.print();
+        }
+
+        // CARREGAR ANIMAIS NA VITRINE COMPLETA
+        async function carregarAnimais() {
+            try {
+                const response = await fetch('/animais/listar');
+                const animais = await response.json();
+                animaisCache = Array.isArray(animais) ? animais : []; 
+                
+                const container = document.getElementById('listaAnimais');
+                if (animaisCache.length === 0) {
+                    container.innerHTML = '<p class="text-gray-500 text-center col-span-full py-16 text-sm italic">Nenhum animal cadastrado ou disponível na vitrine no momento.</p>';
+                    return;
+                }
+
+                container.innerHTML = animaisCache.map(animal => `
+                    <div class="bg-white rounded border border-gray-200 shadow-sm overflow-hidden flex flex-col justify-between">
+                        <div class="relative h-52 overflow-hidden bg-gray-100">
+                            <img src="/${animal.foto || ''}" class="w-full h-full object-cover cursor-zoom-in" onclick="abrirLightbox('/${animal.foto}')" alt="Foto">
+                        </div>
+                        <div class="p-5 flex-1 flex flex-col justify-between">
+                            <div>
+                                <h2 class="text-xl font-bold text-gray-800">${animal.nome}</h2>
+                                <p class="text-green-700 font-semibold text-xs mt-0.5 mb-2">Idade: ${animal.idade || 'N/I'}</p>
+                                <p class="text-gray-600 text-xs leading-relaxed mb-4 h-8 overflow-hidden">${animal.descricao || 'Sem descrição.'}</p>
+                            </div>
+                            <div class="flex gap-2 pt-2">
+                                <button onclick="abrirModal(${animal.id_animal})" class="flex-1 border border-gray-300 text-gray-700 py-2 text-xs font-semibold rounded hover:bg-gray-50 transition">Ver Detalhes</button>
+                                <button onclick="solicitarAdocao(${animal.id_animal})" class="flex-1 bg-green-700 text-white py-2 text-xs font-semibold rounded hover:bg-green-800 transition">Desejo Adotar</button>
+                            </div>
+                        </div>
+                    </div>`).join('');
+            } catch (error) {
+                document.getElementById('listaAnimais').innerHTML = '<p class="text-red-600 text-center col-span-full py-8 text-xs font-bold">Falha ao estabelecer conexão com a listagem de animais.</p>';
+            }
+        }
+
+        function abrirLightbox(src) {
+            document.getElementById('lightboxImagem').src = src;
+            document.getElementById('lightboxModal').classList.remove('hidden'); 
+            document.getElementById('lightboxModal').classList.add('flex');
+            document.body.style.overflow = 'hidden'; 
+        }
+        function fecharLightbox() {
+            document.getElementById('lightboxModal').classList.add('hidden'); 
+            document.getElementById('lightboxModal').classList.remove('flex');
+            document.body.style.overflow = ''; 
+        }
+        function toggleModal(show) {
+            const modal = document.getElementById('modalDetalhes');
+            modal.classList.toggle('hidden', !show); modal.classList.toggle('flex', show);
+            document.body.style.overflow = show ? 'hidden' : '';
+        }
+        async function abrirModal(id) {
+            const animal = animaisCache.find(a => a.id_animal === id);
+            if (!animal) return;
+            animalModalAtual = animal;
+            document.getElementById('modalNome').innerText = animal.nome;
+            document.getElementById('modalIdade').innerText = animal.idade || 'N/I';
+            document.getElementById('modalPorte').innerText = animal.porte || 'N/I';
+            document.getElementById('modalVacinas').innerText = animal.vacinas || 'N/I';
+            document.getElementById('modalTemperamento').innerText = animal.temperamento || 'N/I';
+            document.getElementById('modalDescricao').innerText = animal.descricao || 'Sem descrição.';
+            const mainImg = document.getElementById('modalImagemPrincipal');
+            mainImg.src = animal.foto ? `/${animal.foto}` : '';
+            
+            const galeria = document.getElementById('modalGaleria'); galeria.innerHTML = '';
+            try {
+                const response = await fetch(`/animais/imagens/${id}`);
+                if (response.ok) {
+                    const imgs = await response.json();
+                    [{ caminho: animal.foto }, ...imgs].forEach((img, idx) => {
+                        if(!img.caminho) return;
+                        const btn = document.createElement('button');
+                        btn.className = `h-14 w-20 rounded border ${idx===0?'border-green-600':'border-transparent'} overflow-hidden bg-white`;
+                        btn.onclick = () => { 
+                            mainImg.src = `/${img.caminho}`; 
+                            galeria.childNodes.forEach(c=> { c.classList.remove('border-green-600'); c.classList.add('border-transparent'); });
+                            btn.classList.add('border-green-600'); btn.classList.remove('border-transparent');
+                        };
+                        btn.innerHTML = `<img src="/${img.caminho}" class="w-full h-full object-cover"/>`;
+                        galeria.appendChild(btn);
+                    });
+                }
+            } catch (e) {}
+            toggleModal(true);
+        }
+        function fecharModal() { toggleModal(false); }
+
+        async function solicitarAdocaoModal() {
+            if (!animalModalAtual) return;
+            await solicitarAdocao(animalModalAtual.id_animal);
+            fecharModal();
+        }
+        async function solicitarAdocao(id) {
+            if(!confirm("Confirmar envio do pedido de adoção responsável para este animal?")) return;
+            try {
+                const res = await fetch('/adocoes/solicitar', {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id_adotante: adotante.id_adotante || adotante.id, id_animal: id })
+                });
+                if (res.ok) { alert("Solicitação enviada com sucesso!"); carregarAnimais(); } 
+                else { const d = await res.json(); alert("Erro: " + d.erro); }
+            } catch (e) {}
+        }
+
+        // Inicialização protegida das funções auxiliares
+        const calcularIdade = (dataNasc) => {
+            if (!dataNasc) return 'N/A';
+            const nascimento = new Date(dataNasc);
+            if (Number.isNaN(nascimento.getTime())) return 'N/A';
+            const hoje = new Date();
+            let idade = hoje.getFullYear() - nascimento.getFullYear();
+            if (hoje.getMonth() < nascimento.getMonth() || (hoje.getMonth() === nascimento.getMonth() && hoje.getDate() < nascimento.getDate())) idade--;
+            return idade;
+        };
+
+        carregarAnimais();
+    </script>
+</body>
+</html>

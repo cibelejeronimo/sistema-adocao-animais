@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Meu Perfil - Adotante</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <nav class="bg-green-700 p-4 shadow-md text-white">
+        <div class="container mx-auto flex justify-between items-center">
+            <a href="vitrine.html" class="text-xl font-bold">🐾 Sistema Adoção</a>
+            <div class="space-x-6 flex items-center">
+                <a href="vitrine.html" class="hover:text-green-200 transition">Voltar para Vitrine</a>
+                <button onclick="sair()" class="bg-red-600 px-4 py-1 rounded hover:bg-red-700">Deslogar</button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mx-auto mt-10 px-4 max-w-2xl pb-10">
+        <div class="bg-white p-8 rounded-xl shadow-lg border-t-4 border-green-600">
+            <h2 class="text-3xl font-bold text-gray-800 mb-6">Meus Dados</h2>
+            <div id="dadosPerfil" class="space-y-4 text-gray-700 text-lg">
+                </div>
+        </div>
+
+        <div class="bg-white p-8 rounded-xl shadow-lg border-t-4 border-blue-600 mt-6">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4">Meu Histórico de Solicitações</h2>
+            <div id="historicoAdocoes" class="space-y-4">
+                </div>
+        </div>
+    </div>
+
+    <div id="modalComprovante" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+        <div class="w-full max-w-2xl rounded-3xl bg-white p-6 shadow-2xl">
+            <div class="flex items-center justify-between mb-4 border-b pb-3">
+                <h2 class="text-2xl font-bold text-gray-800">Comprovante de Visita</h2>
+                <button onclick="fecharModalComprovante()" class="text-gray-500 hover:text-red-600 text-2xl font-bold">×</button>
+            </div>
+            <div id="conteudoComprovante" class="space-y-3 text-gray-700 bg-gray-50 p-4 rounded-xl border">
+                <p><strong>Nº Solicitação:</strong> <span id="compId"></span></p>
+                <p><strong>Meu Nome:</strong> <span id="compNomeAdotante"></span></p>
+                <p><strong>Animal Escolhido:</strong> <span id="compNomeAnimal"></span></p>
+                <p><strong>Data e horário da visita:</strong> <span id="compDataVisita"></span></p>
+                <p><strong>Local da visita:</strong> <span id="compLocal"></span></p>
+                <p><strong>Status do Protocolo:</strong> <span id="compStatus"></span></p>
+            </div>
+            <div class="mt-6 flex justify-end gap-3">
+                <button onclick="fecharModalComprovante()" class="rounded-xl border border-gray-300 px-5 py-3 text-sm font-bold text-gray-700 hover:bg-gray-100">Fechar</button>
+                <button onclick="imprimirComprovante()" class="rounded-xl bg-blue-600 px-5 py-3 text-sm font-bold text-white hover:bg-blue-700">Imprimir comprovante</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const adotante = JSON.parse(localStorage.getItem('adotante') || 'null');
+        if (!adotante) window.location.href = 'login.html';
+
+        document.getElementById('dadosPerfil').innerHTML = `
+            <p><strong>Nome:</strong> ${adotante.nome}</p>
+            <p><strong>CPF:</strong> ${adotante.cpf}</p>
+            <p><strong>Email:</strong> ${adotante.email}</p>
+            <p><strong>Telefone:</strong> ${adotante.telefone || 'Não informado'}</p>
+            <p><strong>Endereço:</strong> ${adotante.endereco || ''}, ${adotante.numero || ''} - ${adotante.bairro || ''} (${adotante.estado || ''})</p>
+        `;
+
+        async function carregarHistorico() {
+            const container = document.getElementById('historicoAdocoes');
+            const idAdotante = adotante.id_adotante || adotante.id;
+            
+            try {
+                const response = await fetch(`/adocoes/adotante/${idAdotante}`);
+                const historico = await response.json();
+                
+                if (!historico.length) {
+                    container.innerHTML = '<p class="text-gray-500 italic">Você ainda não realizou nenhuma solicitação.</p>';
+                    return;
+                }
+                
+                container.innerHTML = historico.map(h => {
+                    let statusTxt = h.status;
+                    let colorClass = 'text-blue-600';
+                    let btnComprovante = '';
+                    
+                    if (h.status === 'solicitado') { statusTxt = 'Em Análise'; colorClass = 'text-amber-600'; }
+                    if (h.status === 'aguardando_confirmacao') { 
+                        statusTxt = 'Visita Agendada'; 
+                        colorClass = 'text-blue-600';
+                        btnComprovante = `<button onclick="verComprovante(${h.id_adocao})" class="mt-3 bg-blue-100 text-blue-800 border border-blue-300 font-bold px-4 py-2 rounded-xl text-sm hover:bg-blue-200 transition">🖨️ Ver Comprovante da Visita</button>`;
+                    }
+                    if (h.status === 'adotado') { 
+                        statusTxt = 'Adotado 🎉'; 
+                        colorClass = 'text-green-600'; 
+                        btnComprovante = `<button onclick="verComprovante(${h.id_adocao})" class="mt-3 bg-gray-100 text-gray-800 border border-gray-300 font-bold px-4 py-2 rounded-xl text-sm hover:bg-gray-200 transition">🖨️ Ver Certificado de Adoção</button>`;
+                    }
+                    if (h.status === 'reprovado') { statusTxt = 'Cancelado/Reprovado'; colorClass = 'text-red-600'; }
+
+                    return `
+                        <div class="border p-5 rounded-2xl bg-white flex flex-col shadow-sm">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <h3 class="text-2xl font-bold text-gray-800">${h.Animal?.nome || 'Animal'}</h3>
+                                    <p class="text-sm text-gray-500">Porte: ${h.Animal?.porte || 'Não informado'} | Idade: ${h.Animal?.idade || ''}</p>
+                                    ${h.data_visita ? `<p class="text-sm text-gray-700 mt-2 font-semibold bg-gray-50 inline-block px-2 py-1 rounded">📅 Data Visita: ${new Date(h.data_visita).toLocaleString('pt-BR')}</p>` : ''}
+                                </div>
+                                <span class="font-bold uppercase tracking-wider text-sm ${colorClass}">${statusTxt}</span>
+                            </div>
+                            <div>${btnComprovante}</div>
+                        </div>
+                    `;
+                }).join('');
+            } catch (err) {
+                console.error("Erro ao carregar histórico:", err);
+                container.innerHTML = '<p class="text-red-600">Erro ao carregar histórico.</p>';
+            }
+        }
+
+        async function verComprovante(id) {
+            try {
+                const response = await fetch(`/adocoes/comprovante/${id}`);
+                const data = await response.json();
+                if (response.ok) {
+                    const comp = data.comprovante;
+                    document.getElementById('compId').innerText = comp.id_adocao;
+                    document.getElementById('compNomeAdotante').innerText = comp.nome_adotante;
+                    document.getElementById('compNomeAnimal').innerText = comp.nome_animal;
+                    document.getElementById('compDataVisita').innerText = new Date(comp.data_visita).toLocaleString('pt-BR');
+                    document.getElementById('compLocal').innerText = comp.local_visita;
+                    document.getElementById('compStatus').innerText = comp.status === 'adotado' ? 'ADOÇÃO FINALIZADA' : 'AGUARDANDO VISITA';
+                    
+                    document.getElementById('modalComprovante').classList.remove('hidden');
+                } else {
+                    alert('Erro: ' + data.erro);
+                }
+            } catch (err) {
+                console.error("Erro:", err);
+            }
+        }
+
+        function fecharModalComprovante() {
+            document.getElementById('modalComprovante').classList.add('hidden');
+        }
+
+        function imprimirComprovante() {
+            const conteudo = document.getElementById('conteudoComprovante').innerHTML;
+            const janela = window.open('', '_blank');
+            janela.document.write(`
+                <html><head><title>Comprovante</title><style>body{font-family:Arial,sans-serif;padding:20px;}p{margin:8px 0;}</style></head>
+                <body><h2>Documento de Adoção</h2><hr><br>${conteudo}</body></html>
+            `);
+            janela.document.close();
+            janela.print();
+        }
+
+        function sair() {
+            localStorage.removeItem('adotante');
+            window.location.href = 'login.html';
+        }
+
+        carregarHistorico();
+    </script>
+</body>
+</html>

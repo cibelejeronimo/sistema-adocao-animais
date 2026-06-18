@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adoção de Animais - Início</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 min-h-screen font-sans">
+
+    <div class="relative h-screen flex flex-col items-center justify-center bg-cover bg-center" style="background-image: url('fundo.jpg');">
+        <div class="absolute inset-0 bg-black/50"></div> <div class="relative z-10 text-center px-4 flex flex-col items-center">
+            <h1 class="text-5xl md:text-7xl font-extrabold text-white drop-shadow-2xl mb-4 leading-tight">
+                Encontre seu novo<br>melhor amigo
+            </h1>
+            <p class="text-xl text-gray-200 font-light mb-10 drop-shadow-md">
+                Conectando animais resgatados a lares amorosos.
+            </p>
+            <button onclick="abrirModalLogin()" class="bg-green-600 hover:bg-green-700 text-white font-bold py-4 px-12 rounded-full text-xl shadow-xl transition transform hover:scale-105">
+                Entrar
+            </button>
+            <div class="w-32 h-1.5 bg-green-500 mt-10 rounded-full shadow-lg"></div>
+        </div>
+    </div>
+
+    <div id="modalLogin" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm">
+        <div class="bg-white p-8 rounded-lg shadow-md w-full max-w-md border border-gray-200 relative">
+            
+            <button onclick="fecharModalLogin()" class="absolute top-4 right-4 text-gray-400 hover:text-red-600 text-3xl font-bold focus:outline-none leading-none">&times;</button>
+
+            <div class="text-center mb-8 mt-2">
+                <h1 class="text-2xl font-bold text-green-700">Acesso ao Sistema</h1>
+                <p class="text-gray-500 mt-2 text-sm">Faça login para continuar ou crie sua conta.</p>
+            </div>
+
+            <form id="formLogin" class="space-y-5">
+                <div>
+                    <label class="block text-gray-700 font-semibold mb-1 text-sm">E-mail</label>
+                    <input type="email" id="email" class="w-full border border-gray-300 rounded focus:border-green-600 outline-none px-4 py-2.5" required>
+                </div>
+                
+                <div class="relative">
+                    <label class="block text-gray-700 font-semibold mb-1 text-sm">Senha</label>
+                    <input type="password" id="senha" minlength="6" class="w-full border border-gray-300 rounded focus:border-green-600 outline-none px-4 py-2.5 pr-16" required>
+                    <button type="button" onclick="toggleSenha('senha', 'eyeLogin')" class="absolute right-3 top-8 text-green-700 hover:text-green-800 text-xs font-bold focus:outline-none">
+                        <span id="eyeLogin">Mostrar</span>
+                    </button>
+                </div>
+
+                <p id="mensagemLogin" class="text-center font-semibold text-sm hidden"></p>
+
+                <button type="submit" class="w-full bg-green-700 text-white font-bold py-2.5 rounded hover:bg-green-800 transition shadow-sm">Entrar</button>
+            </form>
+
+            <div class="mt-8 pt-6 border-t border-gray-100 text-center">
+                <p class="text-gray-500 text-sm mb-4">Ainda não tem cadastro?</p>
+                <button onclick="abrirModalCadastro()" class="w-full border border-green-700 text-green-700 font-bold py-2.5 rounded hover:bg-green-50 transition">Criar Nova Conta</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modalCadastro" class="hidden fixed inset-0 z-[60] flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm">
+        <div class="bg-white w-full max-w-3xl rounded-lg shadow-xl max-h-[95vh] overflow-y-auto">
+            <div class="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between z-10">
+                <h2 class="text-xl font-bold text-green-700">Criar Nova Conta</h2>
+                <button onclick="fecharModalCadastro()" class="text-gray-400 hover:text-red-600 text-3xl font-bold px-2 leading-none">&times;</button>
+            </div>
+            
+            <form id="formCadastro" class="p-6 space-y-6">
+                <div>
+                    <h3 class="font-bold text-gray-800 mb-4 border-b pb-2 text-sm uppercase">Dados Pessoais</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <label class="block md:col-span-2">
+                            <span class="text-gray-700 font-semibold text-sm">Nome Completo *</span>
+                            <input type="text" id="cadNome" class="mt-1 w-full border border-gray-300 rounded p-2 focus:border-green-600 outline-none" required>
+                        </label>
+                        <label class="block">
+                            <span class="text-gray-700 font-semibold text-sm">CPF *</span>
+                            <input type="text" id="cadCpf" placeholder="000.000.000-00" class="mt-1 w-full border border-gray-300 rounded p-2 focus:border-green-600 outline-none" required>
+                            <span id="cpfErro" class="text-red-600 text-xs font-bold hidden mt-1">CPF Inválido</span>
+                        </label>
+                        <label class="block">
+                            <span class="text-gray-700 font-semibold text-sm">Data de Nascimento *</span>
+                            <input type="date" id="cadDataNasc" class="mt-1 w-full border border-gray-300 rounded p-2 focus:border-green-600 outline-none" required>
+                        </label>
+                        <label class="block">
+                            <span class="text-gray-700 font-semibold text-sm">Telefone *</span>
+                            <input type="text" id="cadTelefone" placeholder="(00) 00000-0000" class="mt-1 w-full border border-gray-300 rounded p-2 focus:border-green-600 outline-none" required>
+                        </label>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="font-bold text-gray-800 mb-4 border-b pb-2 text-sm uppercase">Endereço</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <label class="block md:col-span-2">
+                            <span class="text-gray-700 font-semibold text-sm">Rua / Avenida *</span>
+                            <input type="text" id="cadEndereco" class="mt-1 w-full border border-gray-300 rounded p-2 focus:border-green-600 outline-none" required>
+                        </label>
+                        <label class="block">
+                            <span class="text-gray-700 font-semibold text-sm">Número *</span>
+                            <input type="text" id="cadNumero" class="mt-1 w-full border border-gray-300 rounded p-2 focus:border-green-600 outline-none" required>
+                        </label>
+                        <label class="block">
+                            <span class="text-gray-700 font-semibold text-sm">Bairro *</span>
+                            <input type="text" id="cadBairro" class="mt-1 w-full border border-gray-300 rounded p-2 focus:border-green-600 outline-none" required>
+                        </label>
+                        <label class="block">
+                            <span class="text-gray-700 font-semibold text-sm">Cidade *</span>
+                            <input type="text" id="cadCidade" class="mt-1 w-full border border-gray-300 rounded p-2 focus:border-green-600 outline-none" required>
+                        </label>
+                        <label class="block">
+                            <span class="text-gray-700 font-semibold text-sm">Estado (UF) *</span>
+                            <input type="text" id="cadEstado" maxlength="2" placeholder="Ex: PR" class="mt-1 w-full border border-gray-300 rounded p-2 focus:border-green-600 outline-none uppercase" required>
+                        </label>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="font-bold text-gray-800 mb-4 border-b pb-2 text-sm uppercase">Dados de Acesso</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <label class="block md:col-span-2">
+                            <span class="text-gray-700 font-semibold text-sm">E-mail *</span>
+                            <input type="email" id="cadEmail" class="mt-1 w-full border border-gray-300 rounded p-2 focus:border-green-600 outline-none" required>
+                        </label>
+                        <div class="relative block">
+                            <span class="text-gray-700 font-semibold text-sm">Senha (Mín. 6 dígitos) *</span>
+                            <input type="password" id="cadSenha" minlength="6" class="mt-1 w-full border border-gray-300 rounded p-2 pr-16 focus:border-green-600 outline-none" required>
+                            <button type="button" onclick="toggleSenha('cadSenha', 'eyeCad1')" class="absolute right-2 top-8 text-green-700 text-xs font-bold focus:outline-none"><span id="eyeCad1">Mostrar</span></button>
+                        </div>
+                        <div class="relative block">
+                            <span class="text-gray-700 font-semibold text-sm">Confirmar Senha *</span>
+                            <input type="password" id="cadConfirmaSenha" minlength="6" class="mt-1 w-full border border-gray-300 rounded p-2 pr-16 focus:border-green-600 outline-none" required>
+                            <button type="button" onclick="toggleSenha('cadConfirmaSenha', 'eyeCad2')" class="absolute right-2 top-8 text-green-700 text-xs font-bold focus:outline-none"><span id="eyeCad2">Mostrar</span></button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="sticky bottom-0 bg-white border-t border-gray-200 pt-4 mt-6 flex justify-end gap-3">
+                    <button type="button" onclick="fecharModalCadastro()" class="px-5 py-2 rounded border border-gray-300 text-gray-600 hover:bg-gray-50 transition font-semibold">Cancelar</button>
+                    <button type="submit" class="px-6 py-2 rounded bg-green-700 text-white hover:bg-green-800 transition font-bold shadow">Finalizar Cadastro</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Lógica de Abrir/Fechar Modais
+        function abrirModalLogin() {
+            document.getElementById('formLogin').reset();
+            document.getElementById('mensagemLogin').classList.add('hidden');
+            document.getElementById('modalLogin').classList.remove('hidden');
+            document.body.style.overflow = 'hidden'; // Trava o scroll do fundo
+        }
+        
+        function fecharModalLogin() {
+            document.getElementById('modalLogin').classList.add('hidden');
+            document.body.style.overflow = ''; 
+        }
+
+        function abrirModalCadastro() {
+            fecharModalLogin(); // Esconde o login para mostrar o cadastro
+            document.getElementById('formCadastro').reset();
+            document.getElementById('modalCadastro').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function fecharModalCadastro() {
+            document.getElementById('modalCadastro').classList.add('hidden');
+            abrirModalLogin(); // Volta para a tela de login
+        }
+
+        // Lógica de Mostrar/Ocultar Senha
+        function toggleSenha(inputId, textId) {
+            const input = document.getElementById(inputId);
+            const text = document.getElementById(textId);
+            if (input.type === 'password') {
+                input.type = 'text';
+                text.innerText = 'Ocultar';
+            } else {
+                input.type = 'password';
+                text.innerText = 'Mostrar';
+            }
+        }
+
+        // Bloqueia data de nascimento futura
+        document.addEventListener("DOMContentLoaded", () => {
+            const hoje = new Date().toISOString().split("T")[0];
+            document.getElementById("cadDataNasc").setAttribute("max", hoje);
+        });
+
+        // Validação Visual de CPF em Tempo Real
+        const inputCpf = document.getElementById('cadCpf');
+        const erroCpf = document.getElementById('cpfErro');
+
+        inputCpf.addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, ''); 
+            if (value.length > 11) value = value.slice(0, 11);
+            value = value.replace(/(\d{3})(\d)/, '$1.$2');
+            value = value.replace(/(\d{3})(\d)/, '$1.$2');
+            value = value.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+            e.target.value = value;
+
+            if (value.length === 14) {
+                if (cpfValido(value)) {
+                    erroCpf.classList.add('hidden');
+                    inputCpf.classList.remove('border-red-500', 'focus:border-red-600', 'border-gray-300');
+                    inputCpf.classList.add('border-green-600', 'focus:border-green-600', 'bg-green-50');
+                } else {
+                    erroCpf.innerText = "CPF Inválido!";
+                    erroCpf.classList.remove('hidden');
+                    inputCpf.classList.remove('border-green-600', 'focus:border-green-600', 'bg-green-50', 'border-gray-300');
+                    inputCpf.classList.add('border-red-500', 'focus:border-red-600');
+                }
+            } else {
+                erroCpf.classList.add('hidden');
+                inputCpf.classList.remove('border-red-500', 'border-green-600', 'bg-green-50', 'focus:border-red-600');
+                inputCpf.classList.add('border-gray-300');
+            }
+        });
+
+        function cpfValido(cpf) {
+            cpf = cpf.replace(/[^\d]+/g, '');
+            if (cpf.length !== 11 || /^(\d)\1{10}$/.test(cpf)) return false;
+            let soma = 0, resto;
+            for (let i = 1; i <= 9; i++) soma += parseInt(cpf.substring(i - 1, i)) * (11 - i);
+            resto = (soma * 10) % 11;
+            if ((resto === 10) || (resto === 11)) resto = 0;
+            if (resto !== parseInt(cpf.substring(9, 10))) return false;
+            soma = 0;
+            for (let i = 1; i <= 10; i++) soma += parseInt(cpf.substring(i - 1, i)) * (12 - i);
+            resto = (soma * 10) % 11;
+            if ((resto === 10) || (resto === 11)) resto = 0;
+            if (resto !== parseInt(cpf.substring(10, 11))) return false;
+            return true;
+        }
+
+        // Submissão do Cadastro
+        document.getElementById('formCadastro').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const cpfDigitado = document.getElementById('cadCpf').value;
+            
+            if (!cpfValido(cpfDigitado)) {
+                erroCpf.classList.remove('hidden');
+                document.getElementById('cadCpf').focus();
+                return;
+            }
+
+            const senha = document.getElementById('cadSenha').value;
+            const confirmaSenha = document.getElementById('cadConfirmaSenha').value;
+            if (senha !== confirmaSenha) {
+                alert("As senhas não coincidem.");
+                return;
+            }
+
+            const dados = {
+                nome: document.getElementById('cadNome').value,
+                cpf: cpfDigitado.replace(/\D/g, ''),
+                data_nascimento: document.getElementById('cadDataNasc').value,
+                telefone: document.getElementById('cadTelefone').value,
+                endereco: document.getElementById('cadEndereco').value,
+                numero: document.getElementById('cadNumero').value,
+                bairro: document.getElementById('cadBairro').value,
+                cidade: document.getElementById('cadCidade').value, // <--- NOVO
+                estado: document.getElementById('cadEstado').value,
+                email: document.getElementById('cadEmail').value,
+                senha: senha
+            };
+
+            try {
+                const res = await fetch('/adotantes/cadastrar', {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(dados)
+                });
+                const data = await res.json();
+                if(res.ok) {
+                    alert("Cadastro realizado com sucesso! Você já pode fazer login.");
+                    fecharModalCadastro(); // Volta automaticamente para o modal de login
+                } else {
+                    alert("Erro: " + (data.mensagem || data.erro));
+                }
+            } catch (err) { alert("Erro ao conectar com o servidor."); }
+        });
+
+        // Submissão do Login
+        document.getElementById('formLogin').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const msgElement = document.getElementById('mensagemLogin');
+            const email = document.getElementById('email').value;
+            const senha = document.getElementById('senha').value;
+            msgElement.classList.add('hidden');
+
+            try {
+                // Tenta logar como Admin primeiro
+                if (email === 'admin@admin.com') {
+                    const res = await fetch('/admin/login', {
+                        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, senha })
+                    });
+                    const data = await res.json();
+                    if (res.ok) {
+                        localStorage.setItem('adminToken', data.token);
+                        window.location.replace('painel-responsavel.html');
+                    } else {
+                        msgElement.innerText = data.erro;
+                        msgElement.className = 'text-center font-semibold text-sm text-red-600 mt-2 block';
+                    }
+                    return;
+                }
+
+                // Tenta logar como Adotante
+                const res = await fetch('/adotantes/login', {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, senha })
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    const dadosAdotante = data.adotante || data.usuario || data.dados || data;
+                    localStorage.setItem('adotante', JSON.stringify(dadosAdotante));
+                    if (data.token) localStorage.setItem('adotanteToken', data.token);
+                    
+                    window.location.replace('vitrine.html');
+                } else {
+                    msgElement.innerText = data.erro || data.mensagem;
+                    msgElement.className = 'text-center font-semibold text-sm text-red-600 mt-2 block';
+                }
+            } catch (error) {
+                msgElement.innerText = 'Erro ao conectar com o servidor.';
+                msgElement.className = 'text-center font-semibold text-sm text-red-600 mt-2 block';
+            }
+        });
+    </script>
+</body>
+</html>

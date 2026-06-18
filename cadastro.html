@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Cadastro de Adotante</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <nav class="bg-green-700 p-4 shadow-md mb-6 text-white">
+        <div class="container mx-auto flex justify-between items-center">
+            <a href="index.html" class="text-xl font-bold">🐾 Sistema Adoção</a>
+            <a href="login.html" class="hover:underline">Já tenho conta</a>
+        </div>
+    </nav>
+
+    <div class="flex items-center justify-center px-4 pb-10">
+        <div class="bg-white p-8 rounded-xl shadow-lg w-full max-w-2xl border-t-4 border-green-600">
+            <h2 class="text-2xl font-bold mb-6 text-gray-800">Novo Cadastro de Adotante</h2>
+            <form id="formCadastro" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="md:col-span-2">
+                    <label class="block text-sm font-medium text-gray-700">Nome Completo</label>
+                    <input type="text" id="nome" class="border border-gray-300 p-2 w-full rounded" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">CPF</label>
+                    <input type="text" id="cpf" class="border border-gray-300 p-2 w-full rounded" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Data de Nascimento</label>
+                    <input type="date" id="data_nascimento" class="border border-gray-300 p-2 w-full rounded" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Telefone</label>
+                    <input type="text" id="telefone" class="border border-gray-300 p-2 w-full rounded">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Rua/Endereço</label>
+                    <input type="text" id="endereco" class="border border-gray-300 p-2 w-full rounded">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Número da Casa</label>
+                    <input type="text" id="numero" class="border border-gray-300 p-2 w-full rounded">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Bairro</label>
+                    <input type="text" id="bairro" class="border border-gray-300 p-2 w-full rounded">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Estado</label>
+                    <input type="text" id="estado" class="border border-gray-300 p-2 w-full rounded">
+                </div>
+                <div class="md:col-span-2 border-t pt-4 mt-2">
+                    <h3 class="font-bold mb-2">Dados de Acesso</h3>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Email</label>
+                    <input type="email" id="email" class="border border-gray-300 p-2 w-full rounded" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Senha</label>
+                    <input type="password" id="senha" class="border border-gray-300 p-2 w-full rounded" required>
+                </div>
+                <div class="md:col-span-2 mt-4">
+                    <button type="submit" class="bg-green-600 hover:bg-green-700 text-white font-bold p-3 w-full rounded-lg shadow-md transition-colors">Concluir Cadastro</button>
+                </div>
+            </form>
+            <p id="mensagem" class="mt-4 text-center font-bold"></p>
+        </div>
+    </div>
+
+    <script>
+        // Função para formatar o CPF automaticamente (Máscara)
+        document.getElementById('cpf').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, ''); // Remove tudo que não é número
+            if (value.length > 11) value = value.slice(0, 11); // Limita a 11 números
+            
+            // Coloca os pontos e o traço
+            value = value.replace(/(\d{3})(\d)/, '$1.$2');
+            value = value.replace(/(\d{3})(\d)/, '$1.$2');
+            value = value.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+            
+            e.target.value = value;
+        });
+
+        // Algoritmo matemático oficial para validar CPF real
+        function cpfValido(cpf) {
+            cpf = cpf.replace(/[^\d]+/g, ''); // Remove pontuação para o cálculo
+            
+            if (cpf.length !== 11 || /^(\d)\1{10}$/.test(cpf)) return false; // Bloqueia sequências como 111.111.111-11
+            
+            let soma = 0, resto;
+            for (let i = 1; i <= 9; i++) soma += parseInt(cpf.substring(i - 1, i)) * (11 - i);
+            resto = (soma * 10) % 11;
+            if ((resto === 10) || (resto === 11)) resto = 0;
+            if (resto !== parseInt(cpf.substring(9, 10))) return false;
+            
+            soma = 0;
+            for (let i = 1; i <= 10; i++) soma += parseInt(cpf.substring(i - 1, i)) * (12 - i);
+            resto = (soma * 10) % 11;
+            if ((resto === 10) || (resto === 11)) resto = 0;
+            if (resto !== parseInt(cpf.substring(10, 11))) return false;
+            
+            return true;
+        }
+
+        document.getElementById('formCadastro').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const cpfDigitado = document.getElementById('cpf').value;
+            const msgElement = document.getElementById('mensagem');
+
+            // --- VALIDAÇÃO DO CPF AQUI ---
+            if (!cpfValido(cpfDigitado)) {
+                msgElement.className = 'mt-4 text-center font-bold text-red-600';
+                msgElement.innerText = 'CPF inválido! Por favor, digite um CPF real.';
+                return; // Interrompe o cadastro se for falso
+            }
+
+            const dados = {
+                nome: document.getElementById('nome').value,
+                cpf: cpfDigitado.replace(/\D/g, ''), // Envia para o banco só os números
+                data_nascimento: document.getElementById('data_nascimento').value,
+                telefone: document.getElementById('telefone').value,
+                endereco: document.getElementById('endereco').value,
+                numero: document.getElementById('numero').value,
+                bairro: document.getElementById('bairro').value,
+                estado: document.getElementById('estado').value,
+                email: document.getElementById('email').value,
+                senha: document.getElementById('senha').value
+            };
+
+            try {
+                const res = await fetch('/adotantes/cadastrar', {
+                    method: 'POST', 
+                    headers: { 'Content-Type': 'application/json' }, 
+                    body: JSON.stringify(dados)
+                });
+                
+                const data = await res.json();
+                msgElement.innerText = data.mensagem || data.erro;
+                
+                if(res.ok) {
+                    msgElement.className = 'mt-4 text-center font-bold text-green-700';
+                    setTimeout(() => window.location.href = 'login.html', 1500);
+                } else {
+                    msgElement.className = 'mt-4 text-center font-bold text-red-600';
+                }
+            } catch (err) {
+                console.error("Erro ao cadastrar:", err);
+                msgElement.className = 'mt-4 text-center font-bold text-red-600';
+                msgElement.innerText = 'Erro ao conectar com o servidor.';
+            }
+        });
+    </script>
+</body>
+</html>
